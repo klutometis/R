@@ -400,10 +400,10 @@
     (debug (R-eval "c" 3))
     (debug (R-eval "c" "harro"))
     (debug (R-eval "c" '#(10 11)))
-    (debug (R-eval "list" "harro"))
+    (debug (R-eval "list" "harro" "yes"))
     (let ((env (R-eval "new.env")))
       (R-eval "print" env))
-
+    
   #+END_SRC
 
   #+BEGIN_SRC makefile :tangle R-test.mk :shebang #!/usr/bin/unexpand -t 4
