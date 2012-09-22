@@ -453,6 +453,13 @@
     (define (R-eval f . args)
       (Reval f args))
     
+    ;;; Yikes: this segfaults; should we check for whether there's a valid
+    ;;; representation of something? What happens when the coercion fails?
+    ;;;
+    ;;; No, it's merely failing on VECSXP.
+    ;; (debug (R-eval "c" 2 "harro" 2.1 #f #t (R-eval "new.env")))
+    ;;; This doesn't, however.
+    (debug (R-eval "c" 2 "harro" 2.1 #f #t (R-eval "c" 2)))
     (debug (R-eval "rep" 2 10))
     (debug (R-eval "rep" 2.1 10))
     (debug (R-eval "rep" #t 10))
