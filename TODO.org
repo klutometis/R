@@ -298,9 +298,10 @@
       return R_NilValue;
     }
     
-    C_word to_real(SEXP arg, int i) {
+    C_word *to_real(SEXP arg, int i) {
       C_word *value = C_alloc(C_SIZEOF_FLONUM);
-      return C_flonum(&value, REAL(arg)[i]);
+      C_flonum(&value, REAL(arg)[i]);
+      return value;
     }
     
     void Reval(C_word c, C_word self, C_word k, C_word name, C_word args) {
@@ -326,9 +327,8 @@
           {
             int length = Rf_length(Rvalue);
             if (length == 1) {
-              /* C_word *value = C_alloc(C_SIZEOF_FLONUM); */
-              /* C_kontinue(k, C_flonum(&value, REAL(Rvalue)[0])); */
-              C_kontinue(k, to_real(Rvalue, 0));
+              C_word *value = C_alloc(C_SIZEOF_FLONUM);
+              C_kontinue(k, C_flonum(&value, REAL(Rvalue)[0]));
             } else {
               C_word *v = C_alloc(C_SIZEOF_VECTOR(length)),
                 *v0 = v;
@@ -337,7 +337,10 @@
               for (i = 0; i < length; i++) {
                 /* C_word *value = C_alloc(C_SIZEOF_FLONUM); */
                 /* *(v++) = C_flonum(&value, REAL(Rvalue)[i]); */
-                *(v++) = to_real(Rvalue, i);
+                /* We're going to have to make a continuation and do CPS
+                   for this to work; should we try the Schemely way
+                   first? */
+                *(v++) = *to_real(Rvalue, i);
               }
               C_kontinue(k, (C_word) v0);
             }
