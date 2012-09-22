@@ -1,3 +1,13 @@
+* Iterating down a list in R
+  See e.g. [[file:/usr/local/src/R/src/main/util.c][util.c]]:
+
+  #+BEGIN_SRC c
+    while( n-- > 0 ) {
+      if (s == R_NilValue)
+        error(_("'nthcdr' list shorter than %d"), n);
+      s = CDR(s);
+     }    
+  #+END_SRC
 * TODO Vectors or lists?
   Here's the hierarchy of vector-types:
 
