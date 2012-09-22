@@ -193,13 +193,13 @@
   #+BEGIN_SRC c :tangle Reval.c
     #include <assert.h>
     #include <string.h>
-
+    
     #include <Rinternals.h>
     #include <Rdefines.h>
     #include <Rembedded.h>
-
+    
     #include <chicken.h>
-
+    
     SEXP toR(C_word arg) {
       if (C_truep(C_i_flonump(arg))) {
         return ScalarReal(C_flonum_magnitude(arg));
@@ -213,12 +213,12 @@
         /* Is this where we need to type the vector; or can we just
            VECSXP? We probably need to type the vector. Can we stick e.g.
            STRSXP in an INTSXP, though?
-
+    
            See e.g. getListElementType in RPythonConverters.c; see also
            do_c_dflt in bind.c. What about calling the actual R function?
            It's too bad do_c or do_c_dflt aren't exposed in
            Rinternals.h.
-
+    
            The call to R is slower, but guaranteed to be semantically
            correct. */
         int length = C_unfix(C_i_vector_length(arg));
@@ -240,22 +240,22 @@
          (and vice versa). */
       return R_NilValue;
     }
-
+    
     void Reval(C_word c, C_word self, C_word k, C_word name, C_word args) {
       int nargs = C_num_to_int(C_i_length(args));
       SEXP expression = allocVector(LANGSXP, nargs + 1);
       /* Have to check this for R_NilValue; see e.g. RNamedCall.c. */
       SEXP function = Rf_findFun(Rf_install(C_c_string(name)), R_GlobalEnv);
-
+    
       SETCAR(expression, function);
       SEXP iterexp = CDR(expression);
-
+    
       while (!C_truep(C_i_nullp(args))) {
         SETCAR(iterexp, toR(C_i_car(args)));
         args = C_i_cdr(args);
         iterexp = CDR(iterexp);
       }
-
+    
       int error = 0;
       SEXP Rvalue = R_tryEval(expression, R_GlobalEnv, &error);
       if (!error) {
@@ -340,7 +340,7 @@
             /* We probably need to allocate a new structure, copy Rvalue
                thither, and free at some point; don't we? Or at least
                protect the value?
-
+    
                PROTECT and UNPROTECT preserve within calls, while
                R_PreserveObject and R_ReleaseObject preserve past calls;
                see:
@@ -351,17 +351,17 @@
       }
       C_kontinue(k, C_SCHEME_UNDEFINED);
     }
-
+    
   #+END_SRC
 
   #+BEGIN_SRC scheme :tangle R-test.scm
     (use debug dollar lolevel miscmacros test)
-
+    
     #>
     #include "Reval.h"
     #include <Rembedded.h>
     <#
-
+    
     (foreign-code
      #<<END
      Rf_initEmbeddedR(4, (char*[]) {"R-test",
@@ -370,13 +370,13 @@
                                     "--args"}) ;
     END
     )
-
+    
     (define Reval (##core#primitive "Reval"))
-
+    
     ;;; We should avoid this trick and just use varargs.
     (define (R-eval f . args)
       (Reval f args))
-
+    
     (debug (R-eval "rep" 2 10))
     (debug (R-eval "rep" 2.1 10))
     (debug (R-eval "rep" #t 10))
