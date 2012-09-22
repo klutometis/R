@@ -298,6 +298,11 @@
       return R_NilValue;
     }
     
+    C_word to_real(SEXP arg, int i) {
+      C_word *value = C_alloc(C_SIZEOF_FLONUM);
+      return C_flonum(&value, REAL(arg)[i]);
+    }
+    
     void Reval(C_word c, C_word self, C_word k, C_word name, C_word args) {
       int nargs = C_num_to_int(C_i_length(args));
       SEXP expression = allocVector(LANGSXP, nargs + 1);
@@ -321,16 +326,18 @@
           {
             int length = Rf_length(Rvalue);
             if (length == 1) {
-              C_word *value = C_alloc(C_SIZEOF_FLONUM);
-              C_kontinue(k, C_flonum(&value, REAL(Rvalue)[0]));
+              /* C_word *value = C_alloc(C_SIZEOF_FLONUM); */
+              /* C_kontinue(k, C_flonum(&value, REAL(Rvalue)[0])); */
+              C_kontinue(k, to_real(Rvalue, 0));
             } else {
               C_word *v = C_alloc(C_SIZEOF_VECTOR(length)),
                 *v0 = v;
               *(v++) = C_VECTOR_TYPE | length;
               int i;
               for (i = 0; i < length; i++) {
-                C_word *value = C_alloc(C_SIZEOF_FLONUM);
-                *(v++) = C_flonum(&value, REAL(Rvalue)[i]);
+                /* C_word *value = C_alloc(C_SIZEOF_FLONUM); */
+                /* *(v++) = C_flonum(&value, REAL(Rvalue)[i]); */
+                *(v++) = to_real(Rvalue, i);
               }
               C_kontinue(k, (C_word) v0);
             }
@@ -395,7 +402,7 @@
             for (i = 0; i < length; i++) {
               *(l++) = C_PAIR_TYPE | (C_SIZEOF_PAIR - 1);
               /* This is where we get into trouble without being able to
-                 do a to_scheme. */
+                 recurse into to_scheme. */
               /* *(l++) = CAR(Rvalue); */
               *(l++) = C_fix(1);
               Rvalue = CDR(Rvalue);
