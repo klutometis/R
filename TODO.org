@@ -308,6 +308,11 @@
       return R_NilValue;
     }
     
+    void to_real(SEXP arg, int i) {
+      C_word *value = C_alloc(C_SIZEOF_FLONUM);
+      C_save(C_flonum(&value, REAL(arg)[i]));
+    }
+    
     void Reval(C_word c, C_word self, C_word k, C_word name, C_word args) {
       int nargs = C_num_to_int(C_i_length(args));
       SEXP expression = allocVector(LANGSXP, nargs + 1);
@@ -339,8 +344,10 @@
               *(v++) = C_VECTOR_TYPE | length;
               int i;
               for (i = 0; i < length; i++) {
-                C_word *value = C_alloc(C_SIZEOF_FLONUM);
-                *(v++) = C_flonum(&value, REAL(Rvalue)[i]);
+                to_real(Rvalue, i);
+                *(v++) = C_restore;
+                /* C_word *value = C_alloc(C_SIZEOF_FLONUM); */
+                /* *(v++) = C_flonum(&value, REAL(Rvalue)[i]); */
                 /* We're going to have to make a continuation and do CPS
                    for this to work; should we try the Schemely way
                    first?
