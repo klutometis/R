@@ -308,12 +308,6 @@
       return R_NilValue;
     }
     
-    C_word *to_real(SEXP arg, int i) {
-      C_word *value = C_alloc(C_SIZEOF_FLONUM);
-      C_flonum(&value, REAL(arg)[i]);
-      return value;
-    }
-    
     void Reval(C_word c, C_word self, C_word k, C_word name, C_word args) {
       int nargs = C_num_to_int(C_i_length(args));
       SEXP expression = allocVector(LANGSXP, nargs + 1);
@@ -345,12 +339,18 @@
               *(v++) = C_VECTOR_TYPE | length;
               int i;
               for (i = 0; i < length; i++) {
-                /* C_word *value = C_alloc(C_SIZEOF_FLONUM); */
-                /* *(v++) = C_flonum(&value, REAL(Rvalue)[i]); */
+                C_word *value = C_alloc(C_SIZEOF_FLONUM);
+                *(v++) = C_flonum(&value, REAL(Rvalue)[i]);
                 /* We're going to have to make a continuation and do CPS
                    for this to work; should we try the Schemely way
-                   first? */
-                *(v++) = *to_real(Rvalue, i);
+                   first?
+    
+                   Calling closures over continuations gets deep into the
+                   bowels; call_cc_values_wrapper uses e.g. C_save. */
+                /* *(v++) = to_real(Rvalue, i); */
+                /* C_word *a = C_alloc(3); */
+                /* k = C_closure(&a, 1, (C_word) to_real); */
+                /* C_apply(4, C_SCHEME_UNDEFINED, k, (C_word) to_real, C_SCHEME_END_OF_LIST); */
               }
               C_kontinue(k, (C_word) v0);
             }
@@ -411,17 +411,19 @@
             int length = Rf_length(Rvalue);
             C_word *l = C_alloc(C_SIZEOF_LIST(length + 1)),
               *l0 = l;
+            printf("length: %d; ", C_SIZEOF_LIST(length + 1));
             int i = 0;
             for (i = 0; i < length; i++) {
               *(l++) = C_PAIR_TYPE | (C_SIZEOF_PAIR - 1);
               /* This is where we get into trouble without being able to
-                 recurse into to_scheme. */
+                 recurse into to_scheme. Or, can we create an
+                 inline-function? */
               /* *(l++) = CAR(Rvalue); */
               *(l++) = C_fix(1);
               Rvalue = CDR(Rvalue);
             }
             *(l++) = C_SCHEME_END_OF_LIST;
-            C_kontinue(k, (C_word) l0);
+            C_kontinue(k, C_fix(1));
           }
         default:
           {
