@@ -331,8 +331,20 @@
           }
         case VECSXP:
           {
-            C_word *list = C_alloc(C_SIZEOF_LIST(1)); 
-            C_kontinue(k, C_a_i_list1(&list, 1, C_fix(1)));
+            int length = Rf_length(Rvalue);
+            C_word *l = C_alloc(C_SIZEOF_LIST(length + 1)),
+              *l0 = l;
+            int i = 0;
+            for (i = 0; i < length; i++) {
+              *(l++) = C_PAIR_TYPE | (C_SIZEOF_PAIR - 1);
+              /* This is where we get into trouble without being able to
+                 do a to_scheme. */
+              /* *(l++) = CAR(Rvalue); */
+              *(l++) = C_fix(1);
+              Rvalue = CDR(Rvalue);
+            }
+            *(l++) = C_SCHEME_END_OF_LIST;
+            C_kontinue(k, (C_word) l0);
           }
         default:
           {
