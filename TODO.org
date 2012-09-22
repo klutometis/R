@@ -1176,5 +1176,25 @@
    I vaguely remember doing this for rJava.
 ** The [[http://cran.r-project.org/doc/manuals/R-exts.html#Organization-of-header-files][headers]]
 * TODO Initialization function
+  Isn't it a little rude to initialize on =use=?
 * TODO Parse positional and keyword arguments.
+  Iterate with a little state machine: last keyword seen, &c. Two
+  lists: keyword and positional lists. Pass them to C.
 * TODO Do less in C, more in Scheme.
+# <<less-in-c>>
+  Maybe we can avoid some of the bizarre memory corruptions when we
+  tried to e.g. procedurize =to_scheme=.
+
+  It should be trivial to do things like allocate vectors.
+
+  Is it also possible to use some sort of Chicken-destructor to call
+  things like e.g. =R_ReleaseObject=? That would be fucking fantastic.
+* TODO Tests
+* TODO =R-value= or =R-get=
+  which is really just a wrapper around =Reval= that calls =get=,
+  isn't it; with optional =rho= (environment)?
+* TODO Simply =eval= and =get=; allow the user to prefix on import?
+  Seems like a shitty thing to have to do by default.
+
+* TODO Recursive =to_scheme=
+  Possibly related to [[less-in-c]]?
