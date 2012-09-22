@@ -1,3 +1,60 @@
+* TODO Vectors or lists?
+  Here's the hierarchy of vector-types:
+
+  #+BEGIN_SRC c
+    /* If a non-vector argument was encountered (perhaps a list if */
+    /* recursive is FALSE) then we must return a list.    Otherwise, */
+    /* we use the natural coercion for vector types. */
+    
+    mode = NILSXP;
+    if (data.ans_flags & 512)    mode = EXPRSXP;
+     else if (data.ans_flags & 256) mode = VECSXP;
+     else if (data.ans_flags & 128) mode = STRSXP;
+     else if (data.ans_flags &  64) mode = CPLXSXP;
+     else if (data.ans_flags &  32) mode = REALSXP;
+     else if (data.ans_flags &  16) mode = INTSXP;
+     else if (data.ans_flags & 2) mode = LGLSXP;
+     else if (data.ans_flags & 1) mode = RAWSXP;
+  #+END_SRC
+
+  They seem to be talking about VECSXP as a list (the so-called "new
+  list") as opposed to vectors of lower types. Maybe it makes sense,
+  therefore, to translate the former as lists; latter, vectors.
+
+  What about EXPRSXP? From [[http://cran.r-project.org/doc/manuals/R-ints.html][internals]]: "Expressions are of type
+  EXPRSXP: they are a vector of (usually language) objects most often
+  seen as the result of parse()."
+
+  So: VECSXPs as lists; STR-, CPLX-, REAL-, INT- and LGLSXPs as
+  vectors (maybe alternatively as lists, if dealing with vectors is
+  too cumbersome).
+
+  Indeed:
+
+  #+BEGIN_SRC c
+    if (mode == VECSXP || mode == EXPRSXP) {
+      if (!recurse) {
+        while (args != R_NilValue) {
+          ListAnswer(CAR(args), 0, &data, call);
+          args = CDR(args);
+        }
+      }
+      else ListAnswer(args, recurse, &data, call);
+      data.ans_length = length(ans);
+     }
+     else if (mode == STRSXP)
+       StringAnswer(args, &data, call);
+     else if (mode == CPLXSXP)
+       ComplexAnswer(args, &data, call);
+     else if (mode == REALSXP)
+       RealAnswer(args, &data, call);
+     else if (mode == RAWSXP)
+       RawAnswer(args, &data, call);
+     else if (mode == LGLSXP)
+       LogicalAnswer(args, &data, call);
+     else /* integer */
+       IntegerAnswer(args, &data, call);    
+  #+END_SRC
 * TODO Embedded R
   [[http://rpy.sourceforge.net/rpy2/doc-2.3/html/introduction.html][rpy2]] has =robjects=, which does lookup on =.globalEnv=. Has a
   callable R-vector type; allows calling of arbitrary R code. The
