@@ -1526,6 +1526,15 @@
        vector
        i))
     
+    (define (R-real-ref vector i)
+      ((foreign-lambda*
+        double
+        ((SEXP vector)
+         (int i))
+        "C_return(REAL((SEXP) vector)[i]);")
+       vector
+       i))
+    
     (define (R-car list)
       ((foreign-lambda* SEXP
                         ((SEXP list))
