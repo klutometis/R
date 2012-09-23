@@ -595,16 +595,16 @@
   #+BEGIN_SRC makefile :tangle R-test.mk :shebang #!/usr/bin/unexpand -t 4
     R_FLAGS := $(shell R CMD config --cppflags) \
         $(shell R CMD config --ldflags)
-
+    
     CHICKEN_FLAGS := $(shell csc -cflags -ldflags -libs)
-
+    
     all: R-test
-
+    
     Reval.o: Reval.c
         gcc $(R_FLAGS) $(CHICKEN_FLAGS) -c -o $@ $^
-
+    
     R-test: Reval.o R-test.scm
-        csc $(R_FLAGS) -o $@ $^      
+        csc $(R_FLAGS) -o $@ $^
   #+END_SRC
 
   Keep [[file:/usr/local/lib64/R/include/Rinternals.h][Rinternals.h]] handy: there's good stuff in there about types,
