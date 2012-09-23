@@ -1494,6 +1494,15 @@
        vector
        i))
     
+    (define (R-string-ref vector i)
+      ((foreign-lambda*
+        c-string
+        ((SEXP vector)
+         (int i))
+        "C_return(CHAR(STRING_ELT((SEXP) vector, i)));")
+       vector
+       i))
+    
     (define (R-car list)
       ((foreign-lambda* SEXP
                         ((SEXP list))
