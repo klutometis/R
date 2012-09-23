@@ -1841,8 +1841,9 @@
     ;;                (R-eval "as.name" "ohjes")))
     ;; (debug (R-eval 'library 'debug))
     (debug (R-eval "library" "ggplot2"))
-    (debug (R-eval "png" "/tmp/harro.png" 1024 768))
+    (debug (R-eval "pdf"))
     (debug (R-eval "qplot" '#(1 2 3 4) '#(3 4 5 6)))
+    (debug (R-eval "plot" '#(1 2 3 4)))
     ;; (debug (R-eval "geom_point"))
     ;; (debug (R-eval "%+%"
     ;;                (R-eval "qplot" '#(1 2 3 4) '#(3 4 5 6))
