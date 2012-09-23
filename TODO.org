@@ -1405,8 +1405,10 @@
     (define-foreign-type SEXP
       (c-pointer "SEXP")
       values
-      ;; Is this where we can do an R_PreserveObject and (set-finalizer!
-      ;; ... R_ReleaseObject)?
+      ;; Can we cast here, too, so we don't have to keep doing `(SEXP)s'
+      ;; all over the place?
+      ;;
+      ;; What if we tagged pointers like R-int, &c.?
       (lambda (sexp)
         ((foreign-lambda*
           void
