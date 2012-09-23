@@ -1503,6 +1503,13 @@
                ((= i length) vector)
              (vector-set! vector i (R->scheme (R-vector-ref value i))))))))
     
+    (define (R-function name)
+      ((foreign-lambda*
+        SEXP
+        ((c-string name))
+        "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
+       name))
+    
     
     (define (R-eval f . args)
       (let ((R-values (map scheme->R args)))
