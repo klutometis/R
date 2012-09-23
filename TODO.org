@@ -133,6 +133,12 @@
   What's happens when we're not merely dealing with a pointer but a
   scalar? Maybe we're constrained to dealing with pointers; or maybe
   we have to actually define the struct.
+
+  What happens, furthermore, when we've protected a pointer (e.g. a
+  string-vector); Scheme has no reference to the vector itself; but
+  merely a string within the vector? Can we protect that string, too?
+  Do we need to actually ref-count so that we preserve the parent
+  vector?
 * Iterating down a list in R
   See e.g. [[file:/usr/local/src/R/src/main/util.c][util.c]]:
 
