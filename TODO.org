@@ -1473,6 +1473,17 @@
        vector
        i))
     
+    (define (R-car list)
+      ((foreign-lambda* SEXP
+                        ((SEXP list))
+                        "C_return(CAR((SEXP) list));")
+       list))
+    (define (R-cdr list)
+      ((foreign-lambda* SEXP
+                        ((SEXP list))
+                        "C_return(CDR((SEXP) list));")
+       list))
+    
     (define (R->scheme value)
       (let ((length (R-length value)))
         (match value
