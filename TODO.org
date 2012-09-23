@@ -1582,8 +1582,18 @@
         "C_return(ScalarReal(real));")
        real))
     
+    (define (R-complex real imaginary)
       ((foreign-lambda*
         SEXP
+        ((double real)
+         (double imaginary))
+        "SEXP complex = allocVector(CPLXSXP, 1);"
+        "COMPLEX(complex)[0].r = real;"
+        "COMPLEX(complex)[0].i = imaginary;"
+        "C_return(complex);")
+       real
+       imaginary))
+    
     (define (R-string string)
       ((foreign-lambda*
         SEXP
@@ -1599,12 +1609,12 @@
              R-null)
             ((boolean? value)
              (R-boolean value))
-            ;; ((complex? value)
-            ;;  (R-complex value))
-            ((or (real? value) (rational? value))
-             (R-real value))
             ((integer? value)
              (R-integer value))
+            ((or (real? value) (rational? value))
+             (R-real value))
+            ((complex? value)
+             (R-complex (real-part value) (imag-part value)))
             ((string? value)
              (R-string value))
             ((vector? value)
@@ -1686,6 +1696,19 @@
        vector
        i))
     
+    (define (R-complex-ref vector i)
+      (receive (real imaginary)
+        ((foreign-primitive
+          void
+          ((SEXP vector)
+           (int i))
+          "Rcomplex complex = COMPLEX((SEXP) vector)[i];"
+          "C_word *real = C_alloc(C_SIZEOF_FLONUM);"
+          "C_word *imag = C_alloc(C_SIZEOF_FLONUM);"
+          "C_values(4, C_SCHEME_UNDEFINED, C_k, C_flonum(&real, complex.r), C_flonum(&imag, complex.i));")
+         vector
+         i)
+        (make-rectangular real imaginary)))
     
     (define scheme-vector
       (case-lambda
@@ -1722,7 +1745,9 @@
           ((? R-real?)
            (scheme-vector-or-scalar value R-real-ref))
           ((? R-boolean?)
-           (scheme-vector-or-scalar value R-boolean-ref)))))
+           (scheme-vector-or-scalar value R-boolean-ref))
+          ((? R-complex?)
+           (scheme-vector-or-scalar value R-complex-ref)))))
     
     (trace R->scheme)
     
@@ -1769,6 +1794,12 @@
     (test #f (R-eval "c" #f))
     (test #t (R-eval "c" #t))
     (test '#(#f #f) (R-eval "rep" #f 2))
+    ;;; Doesn't respect exactness; i.e., complex numbers are represented
+    ;;; by doubles in R.
+    (test (make-rectangular 3.0 3.0)
+          (R-eval "c" (make-rectangular 3 3)))
+    (test (make-vector 2 (make-rectangular 3.0 3.0))
+          (R-eval "rep" (make-rectangular 3 3) 2))
     
   #+END_SRC
 
