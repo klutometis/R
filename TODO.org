@@ -4,6 +4,12 @@
   Macro that takes unquoted symbols; does memoization on the lookup.
   Can it distinguish between function-application and variable-lookup?
   Not sure how to distinguish between niladic and variable.
+
+  Maybe we can avoid evaluating by default, and deal with mainly
+  opaque R-forms; possibly, when you need to modify the R-forms is
+  exceptional (at which point you eval).
+
+  =R= could be a wrapper around =R-apply=, therefore.
 * TODO =NULL= probably depends upon the type.
   If it's a vector or list, empty. =(void)= is lossy, isn't it?
 * TODO R-eval-string
