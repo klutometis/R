@@ -1415,10 +1415,8 @@
           ((SEXP sexp))
           "R_PreserveObject((SEXP) sexp);")
          sexp)
-        sexp
-        #;(tag-pointer sexp 'sexp)
-        )
-      )
+        ;; sexp
+        (tag-pointer sexp 'sexp)))
     
     (define (scheme->R value)
       (cond ((integer? value)
