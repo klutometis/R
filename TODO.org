@@ -170,6 +170,11 @@
      else /* integer */
        IntegerAnswer(args, &data, call);    
   #+END_SRC
+
+  Shit: I'm tempted to listify everything, so we can actually work
+  with it; on the other side: pass to "c" to do the vector-type
+  calculus (eventually, we can reproduce it on our side; but that's
+  optimization).
 * TODO Embedded R
   [[http://rpy.sourceforge.net/rpy2/doc-2.3/html/introduction.html][rpy2]] has =robjects=, which does lookup on =.globalEnv=. Has a
   callable R-vector type; allows calling of arbitrary R code. The
