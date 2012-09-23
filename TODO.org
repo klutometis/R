@@ -1491,7 +1491,12 @@
   things like e.g. =R_ReleaseObject=? That would be fucking fantastic.
 
   #+BEGIN_SRC scheme :tangle R-less-c.scm
-    (use debug lolevel matchable numbers test)
+    (use debug
+         lolevel
+         matchable
+         moremacros
+         numbers
+         test)
     
     #>
     #include <Rembedded.h>
@@ -1577,21 +1582,15 @@
       (R-apply "c" (vector->list vector)))
     
     (define (scheme->R value)
-      (cond ((null? value)
-             R-null)
-            ((boolean? value)
-             (R-boolean value))
-            ((integer? value)
-             (R-integer value))
-            ((or (real? value) (rational? value))
-             (R-real value))
-            ((complex? value)
-             (R-complex (real-part value) (imag-part value)))
-            ((string? value)
-             (R-string value))
-            ((vector? value)
-             (R-vector value))
-            (else value)))
+      (type-case* value
+        (null R-null)
+        (boolean (R-boolean it))
+        (integer (R-integer it))
+        ((real rational) (R-real it))
+        (complex (R-complex it))
+        (string (R-string it))
+        (vector (R-vector it))
+        (else it)))
     
     (trace scheme->R)
     
@@ -1704,24 +1703,21 @@
              value
              (R-length value)
              (R-type value))
-      (let ((length (R-length value)))
-        ;; Pattern matching isn't much better here than cond; might as
-        ;; well have a little dispatch table.
-        (match value
-          ((? R-null?) (void))
-          ((? R-integer?)
-           (scheme-vector-or-scalar value R-integer-ref))
-          ((? R-list?)
-           (scheme-vector value (compose R->scheme R-vector-ref)))
-          ((? R-string?)
-           (scheme-vector-or-scalar value R-string-ref))
-          ((? R-real?)
-           (scheme-vector-or-scalar value R-real-ref))
-          ((? R-boolean?)
-           (scheme-vector-or-scalar value R-boolean-ref))
-          ((? R-complex?)
-           (scheme-vector-or-scalar value R-complex-ref))
-          (_ value))))
+      (type-case* value
+        (R-null (void))
+        (R-integer
+         (scheme-vector-or-scalar it R-integer-ref))
+        (R-list
+         (scheme-vector it (compose R->scheme R-vector-ref)))
+        (R-string
+         (scheme-vector-or-scalar it R-string-ref))
+        (R-real
+         (scheme-vector-or-scalar it R-real-ref))
+        (R-boolean
+         (scheme-vector-or-scalar it R-boolean-ref))
+        (R-complex
+         (scheme-vector-or-scalar it R-complex-ref))
+        (else value)))
     
     (trace R->scheme)
     
