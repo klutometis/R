@@ -1,3 +1,8 @@
+* TODO R-form
+# <<R-form>
+  Macro that takes unquoted symbols; does memoization on the lookup.
+  Can it distinguish between function-application and variable-lookup?
+  Not sure how to distinguish between niladic and variable.
 * TODO R-eval-string
 * TODO Demo
   The demo/vignette should use some of those Clojure-like constructs
