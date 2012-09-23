@@ -1,3 +1,7 @@
+* TODO Attributes
+  There's not only names to worry about; but other things, too: like
+  dimensions for matrices, &c. We might have to come up with a generic
+  attributes thing. Which means that every object becomes a record.
 * TODO What does =NULL= correspond to?
   Is it simply =()=? That's a little weird, though, with null-vectors.
 
