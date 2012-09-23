@@ -9,20 +9,6 @@
 * TODO Demo
   The demo/vignette should use some of those Clojure-like constructs
   for sexiness.
-* TODO Names
-  From [[http://stat.ethz.ch/R-manual/R-devel/library/base/html/name.html][Names and Symbols]]:
-
-  #+BEGIN_QUOTE
-  A ‘name’ (also known as a ‘symbol’) is a way to refer to R objects
-  by name (rather than the value of the object, if any, bound to that
-  name).
-  #+END_QUOTE
-
-  It seems like a natural translation of symbols; what's its
-  relationship to =Rf_install=?
-
-  They're still a little wonky, though, since it tries to evaluate
-  them.
 * TODO Modularize type-translations.
   That way, users can modify =R->scheme= and =scheme->R=; since
   there's no easy =typeof= (there is, however, =C_block_header= and
@@ -32,20 +18,12 @@
   We have to do that anyway, since things like =complex?= apply
   equally to integers; and we have to specify that the =integer?=
   predicate comes first.
-* TODO Memoize function lookups?
 * TODO Named arguments
   Little state machine with last keyword argument read; exhaust the
   named and unnamed arguments.
 * TODO Complex numbers don't respect exactness.
   For example, 3+3i becomes 3.0+3.0i; this is an artifact of the fact
   that complex numbers are represented by pairs of doubles in R.
-* TODO R-eval as a macro.
-  It could e.g. delay evaluation of the second parameter and stringify
-  it.
-
-  An =R= macro that just does the right thing?
-* TODO Call R-functions naturally?
-  I.e., without the =R-eval= adornment.
 * TODO Levels
 * TODO Graphics subsystem
   There has to be a running thread, &c.
@@ -170,6 +148,108 @@
 * TODO =R-value= or =R-get=
   which is really just a wrapper around =Reval= that calls =get=,
   isn't it; with optional =rho= (environment)?
+* DONE Be able to designate an object opaque.
+  CLOSED: [2012-09-23 Sun 12:44]
+  That works! =R-apply= instead of =R-eval= when the contents are
+  fragile; kind of sucks that we're lossy, though. Really should work
+  on that. As long as we don't have to unpack it, though. /Olympioi
+  sei Preis und Dank/!
+* DONE Segfaults on =qplot=
+  CLOSED: [2012-09-23 Sun 12:45]
+  - CLOSING NOTE [2012-09-23 Sun 12:45] \\
+    Fixed, for the time being, with the =R-apply=-hack; need to work on a
+    less-lossy translation, though.
+  Compare =debug= with =str= output; load external file. Maybe it's
+  that we don't preserve names on lists?
+
+  #+BEGIN_SRC scheme
+    (((R-eval "qplot" 2)
+      #(#()
+        #(#<tagged pointer sexp 204d430>)
+        #<tagged pointer sexp 321f2f0>
+        #(2)
+        #(#("2L" "count"))
+        #(#(#<unspecified> #<unspecified>))
+        #(#t)
+        #<tagged pointer sexp 1f16d78>)))
+  #+END_SRC
+
+  #+BEGIN_SRC R
+    > str(qplot(c(1,2,3)))
+    List of 8
+     $ data       :'data.frame':    0 obs. of  0 variables
+     $ layers     :List of 1
+      ..$ :proto object 
+     .. .. $ mapping    : NULL 
+     .. .. $ geom_params: Named list() 
+     .. .. $ stat_params: Named list() 
+     .. .. $ stat       :proto object  
+     .. .. .. $ calculate_groups:function (., data, ...)    
+     .. .. .. $ objname         : chr "bin"  
+     .. .. .. $ default_aes     :function (.)    
+     .. .. .. $ default_geom    :function (.)    
+     .. .. .. $ calculate       :function (., data, scales, binwidth = NULL, origin = NULL, breaks = NULL,   
+        width = 0.9, drop = FALSE, right = FALSE, ...)    
+     .. .. .. $ required_aes    : chr "x"  
+     .. .. .. $ informed        : logi TRUE  
+     .. ..  ..parent: proto object  
+     .. .. .. .. parent: proto object  
+     .. .. $ inherit.aes: logi TRUE 
+     .. .. $ geom       :proto object  
+     .. .. .. $ objname: chr "histogram"  
+     .. ..  ..parent: proto object  
+     .. .. .. .. parent: proto object  
+     .. .. .. .. .. parent: proto object  
+     .. .. $ position   :proto object  
+     .. .. .. $ width : NULL  
+     .. .. .. $ height: NULL  
+     .. ..  ..parent: proto object  
+     .. .. .. .. parent: proto object  
+     .. .. .. .. .. parent: proto object  
+     .. .. $ subset     : NULL 
+     .. .. $ data       : list() 
+     .. ..  ..- attr(*, "class")= chr "waiver" 
+     .. .. $ show_guide : logi NA 
+      .. ..parent: proto object 
+     $ scales     :Formal class 'Scales' [package "ggplot2"] with 1 slots
+      .. ..@ .xData:<environment: 0x2e7ae48> 
+     $ mapping    :List of 1
+      ..$ x: language c(1, 2, 3)
+     $ options    :List of 1
+      ..$ labels:List of 2
+      .. ..$ x: chr "c(1, 2, 3)"
+      .. ..$ y: chr "count"
+     $ coordinates:List of 1
+      ..$ limits:List of 2
+      .. ..$ x: NULL
+      .. ..$ y: NULL
+      ..- attr(*, "class")= chr [1:2] "cartesian" "coord"
+     $ facet      :List of 1
+      ..$ shrink: logi TRUE
+      ..- attr(*, "class")= chr [1:2] "null" "facet"
+     $ plot_env   :<environment: R_GlobalEnv> 
+     - attr(*, "class")= chr "ggplot"    
+  #+END_SRC
+
+  See what happens, for the time being, if we treat named objects as
+  opaque; if we still get something, maybe it's memory management.
+* DONE Names
+  CLOSED: [2012-09-23 Sun 12:47]
+  - CLOSING NOTE [2012-09-23 Sun 12:47] \\
+    Still tries to look up names, though.
+  From [[http://stat.ethz.ch/R-manual/R-devel/library/base/html/name.html][Names and Symbols]]:
+
+  #+BEGIN_QUOTE
+  A ‘name’ (also known as a ‘symbol’) is a way to refer to R objects
+  by name (rather than the value of the object, if any, bound to that
+  name).
+  #+END_QUOTE
+
+  It seems like a natural translation of symbols; what's its
+  relationship to =Rf_install=?
+
+  They're still a little wonky, though, since it tries to evaluate
+  them.
 * DONE Imaginary numbers
   CLOSED: [2012-09-23 Sun 04:30]
   The nice thing about being in Scheme is that we can take advantage
@@ -1851,7 +1931,7 @@
     (debug (R-eval "library" "ggplot2"))
     (debug (R-eval "pdf"))
     (debug (R-eval "qplot" '#(1 2 3 4) '#(3 4 5 6)))
-    (debug (R-eval "qplot" (R-eval ":" 1 10) (R-eval "rnorm" 10)))
+    (debug (R-eval "plot" (R-apply "qplot" (list (R-eval ":" 1 10) (R-eval "rnorm" 10)))))
     ;; (debug (R-eval "geom_point"))
     ;; (debug (R-eval "plot" (R-eval "c" 1 2 3 4)))
     (debug (R-eval "plot" (R-eval "rnorm" 47)))
@@ -1888,6 +1968,23 @@
   - CLOSING NOTE [2012-09-23 Sun 04:31] \\
     Thank the Olympians for Schemely code.
   Possibly related to [[less-in-c]]?
+* CANCELED Memoize function lookups?
+  CLOSED: [2012-09-23 Sun 12:47]
+  - CLOSING NOTE [2012-09-23 Sun 12:47] \\
+    See [[R-form]].
+* CANCELED R-eval as a macro.
+  CLOSED: [2012-09-23 Sun 12:47]
+  - CLOSING NOTE [2012-09-23 Sun 12:47] \\
+    See [[R-form]].
+  It could e.g. delay evaluation of the second parameter and stringify
+  it.
+
+  An =R= macro that just does the right thing?
+* CANCELED Call R-functions naturally?
+  CLOSED: [2012-09-23 Sun 12:48]
+  - CLOSING NOTE [2012-09-23 Sun 12:48] \\
+    See [[R-form]].
+  I.e., without the =R-eval= adornment.
 * CANCELED Simply =eval= and =get=; allow the user to prefix on import?
   CLOSED: [2012-09-23 Sun 04:31]
   Seems like a shitty thing to have to do by default.
