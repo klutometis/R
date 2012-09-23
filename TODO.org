@@ -1533,33 +1533,7 @@
          args)))
     
     (define (R-eval f . args)
-      (let ((R-values (map scheme->R args)))
-        (let ((function
-               ((foreign-lambda*
-                 SEXP
-                 ((c-string name))
-                 "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
-                f)))
-          (let ((return
-                 ((foreign-lambda*
-                   SEXP
-                   ((SEXP f)
-                    (int error)
-                    (scheme-object args))
-                   "int nargs = C_unfix(C_i_length(args));"
-                   "SEXP expression = allocVector(LANGSXP, nargs + 1);"
-                   "SETCAR(expression, (SEXP) f);"
-                   "SEXP ei = CDR(expression);"
-                   "while (!C_truep(C_i_nullp(args))) {"
-                   "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(args)));"
-                   "  args = C_i_cdr(args);"
-                   "  ei = CDR(ei);"
-                   "}"
-                   "C_return(R_tryEval(expression, R_GlobalEnv, &error));")
-                  function
-                  0
-                  R-values)))
-            (R->scheme return)))))
+      (R->scheme (R-apply f args)))
     
     (test 2 (R-eval "c" 2))
     (test '#(2 3) (R-eval "c" 2 3))
