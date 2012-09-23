@@ -1415,8 +1415,14 @@
           ((SEXP sexp))
           "R_PreserveObject((SEXP) sexp);")
          sexp)
-        ;; sexp
-        (tag-pointer sexp 'sexp)))
+        (set-finalizer!
+         (tag-pointer sexp 'sexp)
+         (lambda (sexp)
+           ((foreign-lambda*
+             void
+             ((SEXP sexp))
+             "R_ReleaseObject((SEXP) sexp);")
+            sexp)))))
     
     (define (scheme->R value)
       (cond ((integer? value)
