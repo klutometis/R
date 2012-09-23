@@ -1375,6 +1375,123 @@
 
   Is it also possible to use some sort of Chicken-destructor to call
   things like e.g. =R_ReleaseObject=? That would be fucking fantastic.
+
+  #+BEGIN_SRC scheme :tangle R-less-c.scm
+    (use debug lolevel matchable)
+    
+    #>
+    #include <Rembedded.h>
+    #include <Rinternals.h>
+    <#
+    
+    (foreign-code
+     #<<END
+     Rf_initEmbeddedR(4, (char*[]) {"R-less-c",
+                                    "--slave",
+                                    "--vanilla",
+                                    "--args"});
+    END
+    )
+    
+    (define-foreign-type SEXP
+      (c-pointer "SEXP")
+      values
+      ;; Is this where we can do an R_PreserveObject and (set-finalizer!
+      ;; ... R_ReleaseObject)?
+      (lambda (sexp)
+        ((foreign-lambda*
+          void
+          ((SEXP sexp))
+          "R_PreserveObject((SEXP) sexp);")
+         sexp)
+        sexp
+        #;(tag-pointer sexp 'sexp)
+        )
+      )
+    
+    (define (scheme->R value)
+      (cond ((integer? value)
+             ((foreign-lambda*
+               SEXP
+               ((int i))
+               "C_return(ScalarInteger(i));"
+               )
+              value))))
+    
+    (define-foreign-variable R-null int "NILSXP")
+    (define-foreign-variable R-boolean int "LGLSXP")
+    (define-foreign-variable R-integer int "INTSXP")
+    (define-foreign-variable R-real int "REALSXP")
+    (define-foreign-variable R-string int "STRSXP")
+    (define-foreign-variable R-list int "VECSXP")
+    
+    (define (R-type value)
+      ((foreign-lambda int "TYPEOF" c-pointer) value))
+    
+    (define (R-type? value type)
+      (= (R-type value) type))
+    
+    (define R-null? (cut R-type? <> R-null))
+    (define R-boolean? (cut R-type? <> R-boolean))
+    (define R-integer? (cut R-type? <> R-integer))
+    (define R-real? (cut R-type? <> R-real))
+    (define R-string? (cut R-type? <> R-string))
+    (define R-list? (cut R-type? <> R-list))
+    
+    (define (R-length value)
+      ((foreign-lambda* int
+                   ((SEXP value))
+                   "C_return(Rf_length((SEXP) value));")
+       value))
+    
+    (define (R->scheme value)
+      (debug (foreign-value "NILSXP" int)
+             ((foreign-lambda int "TYPEOF" c-pointer) value))
+      (match value
+        ((? R-null?) '())
+        ((? R-integer?)
+         (if (= (R-length value) 1)
+             ((foreign-lambda*
+               int
+               ((SEXP value))
+               "C_return(INTEGER((SEXP) value)[0]);")
+              value)))))
+    
+    (define (R-eval f . args)
+      (let ((R-values (map scheme->R args)))
+        (debug R-values)
+        (let ((function
+               ((foreign-lambda*
+                 SEXP
+                 ((c-string name))
+                 "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
+                f)))
+          (debug function)
+          (let ((return
+                 ((foreign-lambda*
+                   SEXP
+                   ((SEXP f)
+                    (int error)
+                    (scheme-object args))
+                   "int nargs = C_unfix(C_i_length(args));"
+                   "SEXP expression = allocVector(LANGSXP, nargs + 1);"
+                   "SETCAR(expression, (SEXP) f);"
+                   "SEXP ei = CDR(expression);"
+                   "while (!C_truep(C_i_nullp(args))) {"
+                   "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(args)));"
+                   "  args = C_i_cdr(args);"
+                   "  ei = CDR(ei);"
+                   "}"
+                   "C_return(R_tryEval(expression, R_GlobalEnv, &error));")
+                  function
+                  0
+                  R-values)))
+            (debug (R->scheme return))))))
+    
+    (R-eval "c" 2)    
+    
+  #+END_SRC
+
 * TODO Tests
 * TODO =R-value= or =R-get=
   which is really just a wrapper around =Reval= that calls =get=,
