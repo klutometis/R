@@ -1492,7 +1492,7 @@
           ((? R-null?) '())
           ((? R-integer?)
            (if (= length 1)
-               (integer-ref value 0)
+               (R-integer-ref value 0)
                (do ((vector (make-vector length))
                     (i 0 (+ i 1)))
                    ((= i length) vector)
