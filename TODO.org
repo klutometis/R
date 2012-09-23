@@ -1454,15 +1454,16 @@
        i))
     
     (define (R->scheme value)
-      (match value
-        ((? R-null?) '())
-        ((? R-integer?)
-         (if (= (R-length value) 1)
-             ((foreign-lambda*
-               int
-               ((SEXP value))
-               "C_return(INTEGER((SEXP) value)[0]);")
-              value)))))
+      (let ((length (R-length value)))
+        (match value
+          ((? R-null?) '())
+          ((? R-integer?)
+           (if (= length 1)
+               (integer-ref value 0)
+               (do ((vector (make-vector length))
+                    (i 0 (+ i 1)))
+                   ((= i length) vector)
+                 (vector-set! vector i (integer-ref value i))))))))
     
     (define (R-eval f . args)
       (let ((R-values (map scheme->R args)))
