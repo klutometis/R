@@ -1419,7 +1419,6 @@
         (tag-pointer sexp 'sexp)))
     
     (define (scheme->R value)
-      (debug value)
       (cond ((integer? value)
              ((foreign-lambda*
                SEXP
@@ -1485,9 +1484,8 @@
                         "C_return(CDR((SEXP) list));")
        list))
     
-    (trace R-integer-ref)
-    
     (define (R->scheme value)
+      #;
       (debug 'r->scheme
              value
              (R-length value)
@@ -1542,10 +1540,10 @@
     (define (R-eval f . args)
       (R->scheme (R-apply f args)))
     
-    ;; (test 2 (R-eval "c" 2))
-    ;; (test '#(2 3) (R-eval "c" 2 3))
-    (debug (R-eval "c" 2 3 (R-eval "c" 4 5)))
-    (debug (R-eval "list" 2 3 (R-eval "list" 4 5)))
+    (test 2 (R-eval "c" 2))
+    (test '#(2 3) (R-eval "c" 2 3))
+    (test '#(2 3 4 5) (R-eval "c" 2 3 (R-eval "c" 4 5)))
+    (test '#(2 3 #(4 5)) (R-eval "list" 2 3 (R-eval "list" 4 5)))
     
   #+END_SRC
 
