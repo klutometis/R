@@ -3,6 +3,8 @@
   it.
 
   An =R= macro that just does the right thing?
+* TODO Call R-functions naturally?
+  I.e., without the =R-eval= adornment.
 * TODO Imaginary numbers
   The nice thing about being in Scheme is that we can take advantage
   of the =numbers= egg without too much trouble. Other specialized
