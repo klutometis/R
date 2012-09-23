@@ -1464,6 +1464,15 @@
        vector
        i))
     
+    (define (R-vector-ref vector i)
+      ((foreign-lambda*
+        SEXP
+        ((SEXP vector)
+         (int i))
+        "C_return(VECTOR_ELT((SEXP) vector, i));")
+       vector
+       i))
+    
     (define (R->scheme value)
       (let ((length (R-length value)))
         (match value
