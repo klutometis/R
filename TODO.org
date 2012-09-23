@@ -20,6 +20,18 @@
   There's not only names to worry about; but other things, too: like
   dimensions for matrices, &c. We might have to come up with a generic
   attributes thing. Which means that every object becomes a record.
+
+  Can we maintain a separate attributes table keyed by some hash of
+  the object; which is subject to deletion upon finalization, &c.?
+
+  I'm not sure if that's possible, given garbage collection; could it
+  be that the R-objects (even though they've been preserved) are moved
+  around at some point? The Scheme-objects are moved around for sure,
+  aren't they?
+
+  Can't hash the object, either; since two objects might be otherwise
+  identical but have different attributes. Hash the object along with
+  its attributes? Can't retrieve an object's attributes unambiguously.
 * TODO What does =NULL= correspond to?
   Is it simply =()=? That's a little weird, though, with null-vectors.
 
