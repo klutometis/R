@@ -1,3 +1,4 @@
+* TODO R-eval-string
 * TODO Demo
   The demo/vignette should use some of those Clojure-like constructs
   for sexiness.
