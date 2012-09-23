@@ -1626,7 +1626,7 @@
         (vector (R-vector it))
         (else it)))
     
-    (trace scheme->R)
+    ;; (trace scheme->R)
     
     (define-foreign-variable R-null-type int "NILSXP")
     (define-foreign-variable R-symbol-type int "SYMSXP")
@@ -1726,6 +1726,9 @@
          "C_return(CHAR(PRINTNAME((SEXP) symbol)));")
         symbol)))
     
+    ;; (trace scheme-symbol)
+    ;; (trace R-symbol)
+    
     (define scheme-vector
       (case-lambda
        ((value ref)
@@ -1743,10 +1746,10 @@
             (scheme-vector value ref length))))
     
     (define (R->scheme value)
-      (debug 'r->scheme
-             value
-             (R-length value)
-             (R-type value))
+      ;; (debug 'r->scheme
+      ;;        value
+      ;;        (R-length value)
+      ;;        (R-type value))
       (type-case* value
         (R-null (void))
         (R-integer
@@ -1765,7 +1768,7 @@
          (scheme-symbol it))
         (else value)))
     
-    (trace R->scheme)
+    ;; (trace R->scheme)
     
     (define (R-function name)
       ((foreign-lambda*
@@ -1795,6 +1798,8 @@
          f
          0
          args)))
+    
+    ;; (trace R-apply)
     
     (define (R-eval f . args)
       (R->scheme (R-apply f args)))
