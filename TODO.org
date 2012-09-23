@@ -1404,7 +1404,7 @@
   things like e.g. =R_ReleaseObject=? That would be fucking fantastic.
 
   #+BEGIN_SRC scheme :tangle R-less-c.scm
-    (use debug lolevel matchable test)
+    (use debug lolevel matchable numbers test)
     
     #>
     #include <Rembedded.h>
