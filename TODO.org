@@ -1465,6 +1465,7 @@
     (define-foreign-variable R-boolean int "LGLSXP")
     (define-foreign-variable R-integer int "INTSXP")
     (define-foreign-variable R-real int "REALSXP")
+    (define-foreign-variable R-real int "CPLXSXP")
     (define-foreign-variable R-string int "STRSXP")
     (define-foreign-variable R-list int "VECSXP")
     
