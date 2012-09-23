@@ -1,3 +1,13 @@
+* TODO What does =NULL= correspond to?
+  Is it simply =()=? That's a little weird, though, with null-vectors.
+
+  We'll continue to have an impedence mismatch, I think, with these
+  vector-list puns. Let's make it =()= for the time being.
+
+  What stops us, incidentally, from using lists all the way down? We
+  don't have a mechanism, namely, to distinguish =VECSXP= from the
+  vector types; unless we do a little type calculus to figure out
+  whether the list can be specialized.
 * Iterating down a list in R
   See e.g. [[file:/usr/local/src/R/src/main/util.c][util.c]]:
 
