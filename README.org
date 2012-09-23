@@ -1,4 +1,21 @@
-R
-=
+* R
 
-R support for Chicken Scheme
+The impedence mismatch is strong with this one: [[http://www.r-project.org/][R]] is a
+paleo-pseudo-Scheme[fn:1][fn:2][fn:3] for running statistics; and [[http://www.call-cc.org/][Chicken]] is a
+neo-etymo-Scheme for general computing.
+
+Thank the Olympians, however, that the [[http://benjisimon.blogspot.com/2012/04/why-r-is-popular-and-scheme-isnt.html][Scheme-R dichotomy]] is no
+longer: we can have our cake.
+
+Oh; and eat it, too.
+
+* Footnotes
+
+[fn:1] Ross Ihaka and Robert Gentleman, "[[http://www.stat.auckland.ac.nz/~ihaka/downloads/R-paper.pdf][R: A language for data
+analysis and graphics]]," /Journal of Computational and Graphical
+Statistics/, Vol. 5, No. 3. (1996), pp. 299-314, doi:10.2307/1390807.
+
+[fn:2] Ed Kademan, "Scheme in R," [[http://tolstoy.newcastle.edu.au/R/help/01c/3193.html]].
+
+[fn:3] Stavros Macrakis, "R and Scheme,"
+[[https://stat.ethz.ch/pipermail/r-help/2008-December/181980.html]].
