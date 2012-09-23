@@ -1444,6 +1444,15 @@
                    "C_return(Rf_length((SEXP) value));")
        value))
     
+    (define (integer-ref vector i)
+      ((foreign-lambda*
+        int
+        ((SEXP vector)
+         (int i))
+        "C_return(INTEGER((SEXP) vector)[i]);")
+       vector
+       i))
+    
     (define (R->scheme value)
       (match value
         ((? R-null?) '())
