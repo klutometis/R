@@ -1494,21 +1494,20 @@
     (define R-null (foreign-value "R_NilValue" SEXP))
     
     (define (scheme->R value)
-      (cond ((integer? value)
-             ((foreign-lambda*
-               SEXP
-               ((int i))
-               "C_return(ScalarInteger(i));"
-               )
-              value))
-            ((vector? value)
-             (R-apply "c" (vector->list value)))
+      (cond ((null? value)
+             R-null)
+            ((boolean? value)
+             (R-boolean value))
+            ;; ((complex? value)
+            ;;  (R-complex value))
+            ((or (real? value) (rational? value))
+             (R-real value))
+            ((integer? value)
+             (R-integer value))
             ((string? value)
-             ((foreign-lambda*
-               SEXP
-               ((c-string string))
-               "C_return(ScalarString(Rf_mkChar(string)));")
-              value))))
+             (R-string value))
+            ((vector? value)
+             (R-vector value))))
     
     (trace scheme->R)
     
