@@ -1833,6 +1833,24 @@
     (let ((env (R-eval "new.env")))
       (R-eval "assign" "a" 2 R-missing env)
       (test-assert (R-eval "exists" "a" R-missing env)))
+    ;; (debug (R-eval "library" "debug"))
+    ;; (debug (R-eval "library" 'debug))
+    ;; (debug (symbol? (R-eval "as.name" "harro")))
+    ;; (debug (R-eval "list"
+    ;;                (R-eval "as.name" "harro")
+    ;;                (R-eval "as.name" "ohjes")))
+    ;; (debug (R-eval 'library 'debug))
+    (debug (R-eval "library" "ggplot2"))
+    (debug (R-eval "png" "/tmp/harro.png" 1024 768))
+    (debug (R-eval "qplot" '#(1 2 3 4) '#(3 4 5 6)))
+    ;; (debug (R-eval "geom_point"))
+    ;; (debug (R-eval "%+%"
+    ;;                (R-eval "qplot" '#(1 2 3 4) '#(3 4 5 6))
+    ;;                #;(R-eval "geom_point")
+    ;;                ))
+    (debug (R-eval "get" "%+%"))
+    (debug (R-eval "+" 2 2))
+    (debug (R-eval "dev.off"))
     
   #+END_SRC
 
