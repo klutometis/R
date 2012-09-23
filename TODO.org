@@ -1618,7 +1618,8 @@
             ((string? value)
              (R-string value))
             ((vector? value)
-             (R-vector value))))
+             (R-vector value))
+            (else value)))
     
     (trace scheme->R)
     
@@ -1747,7 +1748,8 @@
           ((? R-boolean?)
            (scheme-vector-or-scalar value R-boolean-ref))
           ((? R-complex?)
-           (scheme-vector-or-scalar value R-complex-ref)))))
+           (scheme-vector-or-scalar value R-complex-ref))
+          (_ value))))
     
     (trace R->scheme)
     
@@ -1800,6 +1802,9 @@
           (R-eval "c" (make-rectangular 3 3)))
     (test (make-vector 2 (make-rectangular 3.0 3.0))
           (R-eval "rep" (make-rectangular 3 3) 2))
+    (let ((env (R-eval "new.env")))
+      (R-eval "assign" "a" 2 -1 env)
+      (test-assert (R-eval "exists" "a" -1 env)))
     
   #+END_SRC
 
