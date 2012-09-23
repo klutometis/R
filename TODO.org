@@ -1546,6 +1546,16 @@
                         "C_return(CDR((SEXP) list));")
        list))
     
+    (define scheme-vector
+      (case-lambda
+       ((value ref)
+        (scheme-vector value ref (R-length value)))
+       ((value ref length)
+        (do ((vector (make-vector length))
+             (i 0 (+ i 1)))
+            ((= i length) vector)
+          (vector-set! vector i (ref value i))))))
+    
     (define (R->scheme value)
       (debug 'r->scheme
              value
