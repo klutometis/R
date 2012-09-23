@@ -1510,6 +1510,27 @@
         "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
        name))
     
+    (define (R-apply f args)
+      (let ((args (map scheme->R args))
+            (f (R-function f)))
+        ((foreign-lambda*
+          SEXP
+          ((SEXP f)
+           (int error)
+           (scheme-object args))
+          "int nargs = C_unfix(C_i_length(args));"
+          "SEXP expression = allocVector(LANGSXP, nargs + 1);"
+          "SETCAR(expression, (SEXP) f);"
+          "SEXP ei = CDR(expression);"
+          "while (!C_truep(C_i_nullp(args))) {"
+          "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(args)));"
+          "  args = C_i_cdr(args);"
+          "  ei = CDR(ei);"
+          "}"
+          "C_return(R_tryEval(expression, R_GlobalEnv, &error));")
+         f
+         0
+         args)))
     
     (define (R-eval f . args)
       (let ((R-values (map scheme->R args)))
