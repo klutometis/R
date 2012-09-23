@@ -1496,7 +1496,7 @@
                (do ((vector (make-vector length))
                     (i 0 (+ i 1)))
                    ((= i length) vector)
-                 (vector-set! vector i (integer-ref value i))))))))
+                 (vector-set! vector i (R-integer-ref value i)))))
     
     (define (R-eval f . args)
       (let ((R-values (map scheme->R args)))
