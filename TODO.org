@@ -1484,9 +1484,10 @@
     (define R-list? (cut R-type? <> R-list))
     
     (define (R-length value)
-      ((foreign-lambda* int
-                   ((SEXP value))
-                   "C_return(Rf_length((SEXP) value));")
+      ((foreign-lambda*
+        int
+        ((SEXP value))
+        "C_return(Rf_length((SEXP) value));")
        value))
     
     (define (R-integer-ref vector i)
