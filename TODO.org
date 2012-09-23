@@ -1913,8 +1913,8 @@
     (test #f (R-eval "c" #f))
     (test #t (R-eval "c" #t))
     (test '#(#f #f) (R-eval "rep" #f 2))
-    ;;; Doesn't respect exactness; i.e., complex numbers are represented
-    ;;; by doubles in R.
+    ;; Doesn't respect exactness; i.e., complex numbers are represented
+    ;; by doubles in R.
     (test (make-rectangular 3.0 3.0)
           (R-eval "c" (make-rectangular 3 3)))
     (test (make-vector 2 (make-rectangular 3.0 3.0))
