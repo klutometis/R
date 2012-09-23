@@ -1510,19 +1510,7 @@
     #>
     #include <Rembedded.h>
     #include <Rinternals.h>
-    
-    static void gc_mutation (C_word *slot, C_word val) {
-      puts ("marro!");
-           fflush (stdout);
-    }
-    
-    static void gc_end (int mode, long ms) {
-     puts ("mein-gott-full-of-stars");
-          fflush (stdout);
-    }
     <#
-    
-    (define interesting-objects (make-hash-table))
     
     (foreign-code
      #<<END
@@ -1530,8 +1518,6 @@
                                     "--slave",
                                     "--vanilla",
                                     "--args"});
-     C_gc_mutation_hook = gc_mutation;
-     C_post_gc_hook = gc_end;
     END
     )
     
@@ -1548,10 +1534,6 @@
           ((SEXP sexp))
           "R_PreserveObject((SEXP) sexp);")
          sexp)
-        (hash-table-set! interesting-objects (object->pointer sexp) sexp)
-        (debug 'pre-gc (hash-table->alist interesting-objects))
-        (gc #t)
-        (debug 'post-gc (hash-table->alist interesting-objects))
         (set-finalizer!
          (tag-pointer sexp 'sexp)
          (lambda (sexp)
@@ -1779,10 +1761,6 @@
     (test #f (R-eval "c" #f))
     (test #t (R-eval "c" #t))
     (test '#(#f #f) (R-eval "rep" #f 2))
-    
-    (debug 'pre-gc (hash-table->alist interesting-objects))
-    (gc #t)
-    (debug 'post-gc (hash-table->alist interesting-objects))
     
   #+END_SRC
 
