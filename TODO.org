@@ -1486,6 +1486,8 @@
     
     (define (R->scheme value)
       (let ((length (R-length value)))
+        ;; Pattern matching isn't much better here than cond; might as
+        ;; well have a little dispatch table.
         (match value
           ((? R-null?) '())
           ((? R-integer?)
