@@ -1561,6 +1561,8 @@
     
     (define R-null (foreign-value "R_NilValue" SEXP))
     
+    (define R-missing (foreign-value "R_MissingArg" SEXP))
+    
     (define (R-boolean boolean)
       ((foreign-lambda*
         SEXP
@@ -1803,8 +1805,8 @@
     (test (make-vector 2 (make-rectangular 3.0 3.0))
           (R-eval "rep" (make-rectangular 3 3) 2))
     (let ((env (R-eval "new.env")))
-      (R-eval "assign" "a" 2 -1 env)
-      (test-assert (R-eval "exists" "a" -1 env)))
+      (R-eval "assign" "a" 2 R-missing env)
+      (test-assert (R-eval "exists" "a" R-missing env)))
     
   #+END_SRC
 
