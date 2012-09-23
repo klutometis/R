@@ -1488,7 +1488,8 @@
                   R-values)))
             (debug (R->scheme return))))))
     
-    (R-eval "c" 2)    
+    (test 2 (R-eval "c" 2))
+    (test '#(2 3) (R-eval "c" 2 3))
     
   #+END_SRC
 
