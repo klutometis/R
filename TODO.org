@@ -1425,7 +1425,9 @@
                ((int i))
                "C_return(ScalarInteger(i));"
                )
-              value))))
+              value))
+            ((vector? value)
+             (R-apply "c" (vector->list value)))))
     
     (define-foreign-variable R-null int "NILSXP")
     (define-foreign-variable R-boolean int "LGLSXP")
