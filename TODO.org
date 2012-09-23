@@ -1511,13 +1511,13 @@
     
     (trace scheme->R)
     
-    (define-foreign-variable R-null int "NILSXP")
-    (define-foreign-variable R-boolean int "LGLSXP")
-    (define-foreign-variable R-integer int "INTSXP")
-    (define-foreign-variable R-real int "REALSXP")
-    (define-foreign-variable R-real int "CPLXSXP")
-    (define-foreign-variable R-string int "STRSXP")
-    (define-foreign-variable R-list int "VECSXP")
+    (define-foreign-variable R-null-type int "NILSXP")
+    (define-foreign-variable R-boolean-type int "LGLSXP")
+    (define-foreign-variable R-integer-type int "INTSXP")
+    (define-foreign-variable R-real-type int "REALSXP")
+    (define-foreign-variable R-complex-type int "CPLXSXP")
+    (define-foreign-variable R-string-type int "STRSXP")
+    (define-foreign-variable R-list-type int "VECSXP")
     
     (define (R-type value)
       ((foreign-lambda int "TYPEOF" c-pointer) value))
@@ -1525,13 +1525,13 @@
     (define (R-type? value type)
       (= (R-type value) type))
     
-    (define R-null? (cut R-type? <> R-null))
-    (define R-boolean? (cut R-type? <> R-boolean))
-    (define R-integer? (cut R-type? <> R-integer))
-    (define R-real? (cut R-type? <> R-real))
-    (define R-complex? (cut R-type? <> R-complex))
-    (define R-string? (cut R-type? <> R-string))
-    (define R-list? (cut R-type? <> R-list))
+    (define R-null? (cut R-type? <> R-null-type))
+    (define R-boolean? (cut R-type? <> R-boolean-type))
+    (define R-integer? (cut R-type? <> R-integer-type))
+    (define R-real? (cut R-type? <> R-real-type))
+    (define R-complex? (cut R-type? <> R-complex-type))
+    (define R-string? (cut R-type? <> R-string-type))
+    (define R-list? (cut R-type? <> R-list-type))
     
     (define (R-length value)
       ((foreign-lambda*
