@@ -1582,6 +1582,7 @@
     (test '#(2 3) (R-eval "c" 2 3))
     (test '#(2 3 4 5) (R-eval "c" 2 3 (R-eval "c" 4 5)))
     (test '#(2 3 #(4 5)) (R-eval "list" 2 3 (R-eval "list" 4 5)))
+    (test '#("harro" "harro") (R-eval "rep" "harro" 2))
     
   #+END_SRC
 
