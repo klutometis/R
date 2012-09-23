@@ -42,6 +42,63 @@
   Where S1 is a struct and S1PTR is the pointer to this struct.
   #+END_QUOTE
 
+* TODO Finalizers
+  I'm not sure what the scope of =R_PreserveObject= and
+  =R_ReleaseObject= is; if it applies even to scalars, then can every
+  R-value can be a non-immediate object (a promise, thunk or record)
+  on which we =set-finalizer!=?
+
+  Let's ignore it for the time being; at the very least, I suspect
+  we'll have to use it on opaque pointers. If records, indeed, are
+  non-immediate; maybe we can =set-finalizer!= on those.
+
+  Look at this artifact, incidentally, from sdl-ttf:
+
+  #+BEGIN_SRC scheme
+    (define-foreign-type TTF_Font (c-pointer "TTF_Font")
+      ttf-font-pointer
+      (lambda (p)
+       (set-finalizer! ((pointer-to-record-lambda ttf-font) p)
+               ttf-close-font)))
+  #+END_SRC
+
+  Sets the finalizer right in the foreign-type declaration.
+  Interesting. Another artifact, where they convert pointers to
+  blocks:
+
+  #+BEGIN_SRC scheme
+    (define (-sdl-unbox-ttf-glyph e)
+      (let ((p (##sys#make-pointer)))
+        (if e (##core#inline "C_pointer_to_block" p (ttf-glyph-buffer e)))
+        p))
+    
+    (define-foreign-type GlyphMetrics (c-pointer "GlyphMetrics")
+      -sdl-unbox-ttf-glyph)
+  #+END_SRC
+
+  sdl-base does a =pointer-to-record-lambda=:
+
+  #+BEGIN_SRC scheme
+    (define-syntax pointer-to-record-lambda
+      (ir-macro-transformer
+       (lambda (e i c)
+         (let ((record-name (cadr e)))
+           `(lambda (pointer)
+          (and pointer
+               (,(i (symbol-append 'make- (strip-syntax record-name))) pointer)))))))
+  #+END_SRC
+
+  Here's the classic tagged-pointer from cairo:
+
+  #+BEGIN_SRC scheme
+    (define-foreign-type cairo_t (c-pointer "cairo_t")
+      values
+      (cut tag-pointer <> 'cairo))
+  #+END_SRC
+
+  What's happens when we're not merely dealing with a pointer but a
+  scalar? Maybe we're constrained to dealing with pointers; or maybe
+  we have to actually define the struct.
 * Iterating down a list in R
   See e.g. [[file:/usr/local/src/R/src/main/util.c][util.c]]:
 
