@@ -112,6 +112,9 @@
   to pull it off. How do we get the address of the R-object in
   question? No good: we still have to map the Scheme value to the
   R-address somehow. Back to square zero.
+
+  Also, =object->pointer= only applies to non-immediates; we might
+  have to resort to records here. Damn.
 * TODO What does =NULL= correspond to?
   Is it simply =()=? That's a little weird, though, with null-vectors.
 
