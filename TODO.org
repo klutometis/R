@@ -1,3 +1,7 @@
+* TODO Imaginary numbers
+  The nice thing about being in Scheme is that we can take advantage
+  of the =numbers= egg without too much trouble. Other specialized
+  things we can do for e.g. matrices?
 * TODO Attributes
   There's not only names to worry about; but other things, too: like
   dimensions for matrices, &c. We might have to come up with a generic
