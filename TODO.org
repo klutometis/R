@@ -32,6 +32,86 @@
   Can't hash the object, either; since two objects might be otherwise
   identical but have different attributes. Hash the object along with
   its attributes? Can't retrieve an object's attributes unambiguously.
+
+  Look out for =C_gc_mutation_hook= and =C_gc_post_hook= in runtime.c.
+  The latter might be useful for individual mutations; the former for
+  a scan of the locative-table?
+
+  test-cg-hooks.scm has:
+
+  #+BEGIN_SRC scheme
+    #>
+    
+    static int count = 0;
+    
+    static void 
+    gc_start(int mode)
+    {
+      printf(">>>>> GC pre hook - mode=%d, count=%d\n", mode, count++);
+    }
+    
+    static void
+    gc_end(int mode, long ms)
+    {
+      printf("<<<<< GC post hook - mode=%d, count=%d, ms=%ld\n", mode, --count, ms);
+    }
+    
+    <#
+    
+    (set-gc-report! #t)
+    
+    (foreign-code #<<EOF
+    C_pre_gc_hook = gc_start;
+    C_post_gc_hook = gc_end;
+    EOF
+    )
+  #+END_SRC
+
+  Not sure how I would update the attribute-table based on the new
+  locative-table, though.
+
+  =C_GC_HOOKS= doesn't appear to be turned on by default, though; so
+  =C_gc_mutation_hook= is useless. =C_post_gc_hook=, on the other
+  hand, gets called; can we create a table of objects and see how
+  their pointers change?
+
+  See [[http://homepage.stat.uiowa.edu/~luke/R/gengcnotes.html][Luke's notes on the generational GC]]:
+
+  #+BEGIN_QUOTE
+  However, the non-moving allocation strategy used by the generational
+  collector means that eventually locations of successive allocations
+  become essentially unrelated and are therefore very likely to be
+  quite far apart.
+  #+END_QUOTE
+
+  Is it dangerous to assume that the addresses pointing to R objects
+  don't move?
+
+  #+BEGIN_QUOTE
+  The code enabled by defining =USE_GENERATIONAL_GC= implements a
+  non-moving generational collector with two or three generations.
+  #+END_QUOTE
+
+  Ah, =USE_GENERATIONAL_GC= is not on by default? It is in 1.8.1;
+  could it be that recent versions use generational GC? See memory.c:
+
+  #+BEGIN_SRC c
+    /*
+     *      This code implements a non-moving generational collector
+     *      with two or three generations.
+     */
+  #+END_SRC
+
+  See [[http://cran.r-project.org/doc/manuals/R-ints.html#The-write-barrier][R-internals]]:
+
+  #+BEGIN_QUOTE
+  R has since version 1.2.0 had a generational garbage collector.
+  #+END_QUOTE
+
+  Christ, it depends on an implementation detail; but we might be able
+  to pull it off. How do we get the address of the R-object in
+  question? No good: we still have to map the Scheme value to the
+  R-address somehow. Back to square zero.
 * TODO What does =NULL= correspond to?
   Is it simply =()=? That's a little weird, though, with null-vectors.
 
