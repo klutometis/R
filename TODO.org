@@ -1,3 +1,4 @@
+* TODO Convenience functions for `[`, &c.?
 * TODO R-form
 # <<R-form>
   Macro that takes unquoted symbols; does memoization on the lookup.
