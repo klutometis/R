@@ -1455,7 +1455,7 @@
                    "C_return(Rf_length((SEXP) value));")
        value))
     
-    (define (integer-ref vector i)
+    (define (R-integer-ref vector i)
       ((foreign-lambda*
         int
         ((SEXP vector)
