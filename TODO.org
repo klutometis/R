@@ -1556,6 +1556,12 @@
             ((= i length) vector)
           (vector-set! vector i (ref value i))))))
     
+    (define (scheme-vector-or-scalar value ref)
+      (let ((length (R-length value)))
+        (if (= length 1)
+            (ref value 0)
+            (scheme-vector value ref length))))
+    
     (define (R->scheme value)
       (debug 'r->scheme
              value
