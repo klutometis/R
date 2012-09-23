@@ -118,6 +118,13 @@
 
   Also, =object->pointer= only applies to non-immediates; we might
   have to resort to records here. Damn.
+
+  [[http://api.call-cc.org/doc/heap-o-rama][Heap-o-rama]] might have been interesting, were it not for attributes
+  on immediate objects.
+
+  Just a stab in the dark, but Chicken has =C_i_getprop= and
+  =C_putprop=; can properties be hidden in the header of objects
+  somehow?
 * TODO What does =NULL= correspond to?
   Is it simply =()=? That's a little weird, though, with null-vectors.
 
