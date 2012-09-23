@@ -1441,7 +1441,14 @@
                )
               value))
             ((vector? value)
-             (R-apply "c" (vector->list value)))))
+             (R-apply "c" (vector->list value)))
+            ((string? value)
+             ((foreign-lambda*
+               SEXP
+               ((c-string string))
+               "C_return(ScalarString(Rf_mkChar(string)));")
+              value))))
+    
     
     (define-foreign-variable R-null int "NILSXP")
     (define-foreign-variable R-boolean int "LGLSXP")
