@@ -1460,6 +1460,39 @@
              "R_ReleaseObject((SEXP) sexp);")
             sexp)))))
     
+    (define (R-integer integer)
+      ((foreign-lambda*
+        SEXP
+        ((int integer))
+        "C_return(ScalarInteger(integer));")
+       integer))
+    
+    (define (R-vector vector)
+      (R-apply "c" (vector->list vector)))
+    
+    (define (R-string string)
+      ((foreign-lambda*
+        SEXP
+        ((c-string string))
+        "C_return(ScalarString(Rf_mkChar(string)));")
+       string))
+    
+    (define (R-boolean boolean)
+      ((foreign-lambda*
+        SEXP
+        ((bool bool))
+        "C_return(ScalarLogical(bool ? 1 : 0));")
+       boolean))
+    
+    (define (R-real real)
+      ((foreign-lambda*
+        SEXP
+        ((double real))
+        "C_return(ScalarReal(real));")
+       real))
+    
+    (define R-null (foreign-value "R_NilValue" SEXP))
+    
     (define (scheme->R value)
       (cond ((integer? value)
              ((foreign-lambda*
