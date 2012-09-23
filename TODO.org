@@ -1621,7 +1621,7 @@
         (boolean (R-boolean it))
         (integer (R-integer it))
         ((real rational) (R-real it))
-        (complex (R-complex it))
+        (complex (R-complex (real-part it) (imag-part it)))
         (string (R-string it))
         (vector (R-vector it))
         (else it)))
