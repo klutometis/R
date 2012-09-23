@@ -1490,6 +1490,15 @@
         "C_return(Rf_length((SEXP) value));")
        value))
     
+    (define (R-boolean-ref vector i)
+      ((foreign-lambda*
+        bool
+        ((SEXP vector)
+         (int i))
+        "C_return(LOGICAL((SEXP) vector)[i] ? C_SCHEME_TRUE : C_SCHEME_FALSE);")
+       vector
+       i))
+    
     (define (R-integer-ref vector i)
       ((foreign-lambda*
         int
