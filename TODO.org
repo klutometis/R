@@ -1545,7 +1545,7 @@
         bool
         ((SEXP vector)
          (int i))
-        "C_return(LOGICAL((SEXP) vector)[i] ? C_SCHEME_TRUE : C_SCHEME_FALSE);")
+        "C_return(LOGICAL((SEXP) vector)[i]);")
        vector
        i))
     
