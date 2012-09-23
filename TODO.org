@@ -1492,6 +1492,19 @@
     
   #+END_SRC
 
+  #+BEGIN_SRC makefile :tangle R-less-c.mk :shebang #!/usr/bin/unexpand -t 4
+    R_FLAGS := $(shell R CMD config --cppflags) \
+        $(shell R CMD config --ldflags)
+    
+    all: R-less-c
+    
+    R-less-c.c: R-less-c.scm
+        csc $(R_FLAGS) -t -o $@ $^
+    
+    R-less-c: R-less-c.c
+        csc $(R_FLAGS) -o $@ $^
+    
+  #+END_SRC
 * TODO Tests
 * TODO =R-value= or =R-get=
   which is really just a wrapper around =Reval= that calls =get=,
