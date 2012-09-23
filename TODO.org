@@ -8,6 +8,40 @@
   don't have a mechanism, namely, to distinguish =VECSXP= from the
   vector types; unless we do a little type calculus to figure out
   whether the list can be specialized.
+* What is SEXP?
+  It turns out SEXP is a pointer, after all; see Rinternals.h:
+
+  #+BEGIN_SRC c
+    typedef struct SEXPREC {
+        SEXPREC_HEADER;
+        union {
+        struct primsxp_struct primsxp;
+        struct symsxp_struct symsxp;
+        struct listsxp_struct listsxp;
+        struct envsxp_struct envsxp;
+        struct closxp_struct closxp;
+        struct promsxp_struct promsxp;
+        } u;
+    } SEXPREC, *SEXP;
+  #+END_SRC
+
+  Compare [[http://stackoverflow.com/a/1543720][this SO answer]]:
+
+  #+BEGIN_QUOTE
+  Absolutely valid. Usually, you can take full advantage of this way
+  by defining two types together:
+
+  #+BEGIN_SRC c
+    typedef struct
+    {
+     int a;
+     int b;
+    } S1, *S1PTR;
+  #+END_SRC
+
+  Where S1 is a struct and S1PTR is the pointer to this struct.
+  #+END_QUOTE
+
 * Iterating down a list in R
   See e.g. [[file:/usr/local/src/R/src/main/util.c][util.c]]:
 
