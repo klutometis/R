@@ -12,6 +12,9 @@
 
   It seems like a natural translation of symbols; what's its
   relationship to =Rf_install=?
+
+  They're still a little wonky, though, since it tries to evaluate
+  them.
 * TODO Modularize type-translations.
   That way, users can modify =R->scheme= and =scheme->R=; since
   there's no easy =typeof= (there is, however, =C_block_header= and
