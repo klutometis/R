@@ -14,10 +14,6 @@
 * TODO Levels
 * TODO Graphics subsystem
   There has to be a running thread, &c.
-* TODO Imaginary numbers
-  The nice thing about being in Scheme is that we can take advantage
-  of the =numbers= egg without too much trouble. Other specialized
-  things we can do for e.g. matrices?
 * TODO Libraries
 * TODO Function objects
   Check for them instead of a string and dispatch on those without
@@ -131,7 +127,23 @@
 
   We could deal with properties in an ad-hoc fashion: Oh, the vector
   has names? Hash table. Oh, the vector has dims? Matrix. &c.
-* TODO What does =NULL= correspond to?
+* TODO Initialization function
+  Isn't it a little rude to initialize on =use=?
+* TODO Parse positional and keyword arguments.
+  Iterate with a little state machine: last keyword seen, &c. Two
+  lists: keyword and positional lists. Pass them to C.
+* TODO =R-value= or =R-get=
+  which is really just a wrapper around =Reval= that calls =get=,
+  isn't it; with optional =rho= (environment)?
+* DONE Imaginary numbers
+  CLOSED: [2012-09-23 Sun 04:30]
+  The nice thing about being in Scheme is that we can take advantage
+  of the =numbers= egg without too much trouble. Other specialized
+  things we can do for e.g. matrices?
+* DONE What does =NULL= correspond to?
+  CLOSED: [2012-09-23 Sun 04:30]
+  - CLOSING NOTE [2012-09-23 Sun 04:30] \\
+    We're using (void) for the time being (NB: there's a pun with ()).
   Is it simply =()=? That's a little weird, though, with null-vectors.
 
   We'll continue to have an impedence mismatch, I think, with these
@@ -141,41 +153,8 @@
   don't have a mechanism, namely, to distinguish =VECSXP= from the
   vector types; unless we do a little type calculus to figure out
   whether the list can be specialized.
-* What is SEXP?
-  It turns out SEXP is a pointer, after all; see Rinternals.h:
-
-  #+BEGIN_SRC c
-    typedef struct SEXPREC {
-        SEXPREC_HEADER;
-        union {
-        struct primsxp_struct primsxp;
-        struct symsxp_struct symsxp;
-        struct listsxp_struct listsxp;
-        struct envsxp_struct envsxp;
-        struct closxp_struct closxp;
-        struct promsxp_struct promsxp;
-        } u;
-    } SEXPREC, *SEXP;
-  #+END_SRC
-
-  Compare [[http://stackoverflow.com/a/1543720][this SO answer]]:
-
-  #+BEGIN_QUOTE
-  Absolutely valid. Usually, you can take full advantage of this way
-  by defining two types together:
-
-  #+BEGIN_SRC c
-    typedef struct
-    {
-     int a;
-     int b;
-    } S1, *S1PTR;
-  #+END_SRC
-
-  Where S1 is a struct and S1PTR is the pointer to this struct.
-  #+END_QUOTE
-
-* TODO Finalizers
+* DONE Finalizers
+  CLOSED: [2012-09-23 Sun 04:30]
   I'm not sure what the scope of =R_PreserveObject= and
   =R_ReleaseObject= is; if it applies even to scalars, then can every
   R-value can be a non-immediate object (a promise, thunk or record)
@@ -238,17 +217,10 @@
   merely a string within the vector? Can we protect that string, too?
   Do we need to actually ref-count so that we preserve the parent
   vector?
-* Iterating down a list in R
-  See e.g. [[file:/usr/local/src/R/src/main/util.c][util.c]]:
-
-  #+BEGIN_SRC c
-    while( n-- > 0 ) {
-      if (s == R_NilValue)
-        error(_("'nthcdr' list shorter than %d"), n);
-      s = CDR(s);
-     }    
-  #+END_SRC
-* TODO Vectors or lists?
+* DONE Vectors or lists?
+  CLOSED: [2012-09-23 Sun 04:30]
+  - CLOSING NOTE [2012-09-23 Sun 04:30] \\
+    Vectors all the way down for now.
   Here's the hierarchy of vector-types:
 
   #+BEGIN_SRC c
@@ -310,7 +282,8 @@
   with it; on the other side: pass to "c" to do the vector-type
   calculus (eventually, we can reproduce it on our side; but that's
   optimization).
-* TODO Embedded R
+* DONE Embedded R
+  CLOSED: [2012-09-23 Sun 04:30]
   [[http://rpy.sourceforge.net/rpy2/doc-2.3/html/introduction.html][rpy2]] has =robjects=, which does lookup on =.globalEnv=. Has a
   callable R-vector type; allows calling of arbitrary R code. The
   ``R singleton.'' There's =r_repr=: R-representation? Deals with
@@ -1505,12 +1478,8 @@
 
    I vaguely remember doing this for rJava.
 ** The [[http://cran.r-project.org/doc/manuals/R-exts.html#Organization-of-header-files][headers]]
-* TODO Initialization function
-  Isn't it a little rude to initialize on =use=?
-* TODO Parse positional and keyword arguments.
-  Iterate with a little state machine: last keyword seen, &c. Two
-  lists: keyword and positional lists. Pass them to C.
-* TODO Do less in C, more in Scheme.
+* DONE Do less in C, more in Scheme.
+  CLOSED: [2012-09-23 Sun 04:30]
 # <<less-in-c>>
   Maybe we can avoid some of the bizarre memory corruptions when we
   tried to e.g. procedurize =to_scheme=.
@@ -1823,12 +1792,58 @@
         csc $(R_FLAGS) -o $@ $^
     
   #+END_SRC
-* TODO Tests
-* TODO =R-value= or =R-get=
-  which is really just a wrapper around =Reval= that calls =get=,
-  isn't it; with optional =rho= (environment)?
-* TODO Simply =eval= and =get=; allow the user to prefix on import?
+* DONE Tests
+  CLOSED: [2012-09-23 Sun 04:31]
+* DONE Recursive =to_scheme=
+  CLOSED: [2012-09-23 Sun 04:31]
+  - CLOSING NOTE [2012-09-23 Sun 04:31] \\
+    Thank the Olympians for Schemely code.
+  Possibly related to [[less-in-c]]?
+* CANCELED Simply =eval= and =get=; allow the user to prefix on import?
+  CLOSED: [2012-09-23 Sun 04:31]
   Seems like a shitty thing to have to do by default.
 
-* TODO Recursive =to_scheme=
-  Possibly related to [[less-in-c]]?
+* What is SEXP?
+  It turns out SEXP is a pointer, after all; see Rinternals.h:
+
+  #+BEGIN_SRC c
+    typedef struct SEXPREC {
+        SEXPREC_HEADER;
+        union {
+        struct primsxp_struct primsxp;
+        struct symsxp_struct symsxp;
+        struct listsxp_struct listsxp;
+        struct envsxp_struct envsxp;
+        struct closxp_struct closxp;
+        struct promsxp_struct promsxp;
+        } u;
+    } SEXPREC, *SEXP;
+  #+END_SRC
+
+  Compare [[http://stackoverflow.com/a/1543720][this SO answer]]:
+
+  #+BEGIN_QUOTE
+  Absolutely valid. Usually, you can take full advantage of this way
+  by defining two types together:
+
+  #+BEGIN_SRC c
+    typedef struct
+    {
+     int a;
+     int b;
+    } S1, *S1PTR;
+  #+END_SRC
+
+  Where S1 is a struct and S1PTR is the pointer to this struct.
+  #+END_QUOTE
+
+* Iterating down a list in R
+  See e.g. [[file:/usr/local/src/R/src/main/util.c][util.c]]:
+
+  #+BEGIN_SRC c
+    while( n-- > 0 ) {
+      if (s == R_NilValue)
+        error(_("'nthcdr' list shorter than %d"), n);
+      s = CDR(s);
+     }    
+  #+END_SRC
