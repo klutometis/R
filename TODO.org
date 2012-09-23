@@ -1564,6 +1564,13 @@
     
     (define R-missing (foreign-value "R_MissingArg" SEXP))
     
+    (define (R-symbol symbol)
+      ((foreign-lambda*
+        SEXP
+        ((c-string symbol))
+        "C_return(Rf_install(symbol));")
+       (symbol->string symbol)))
+    
     (define (R-boolean boolean)
       ((foreign-lambda*
         SEXP
@@ -1610,6 +1617,7 @@
     (define (scheme->R value)
       (type-case* value
         (null R-null)
+        (symbol (R-symbol it))
         (boolean (R-boolean it))
         (integer (R-integer it))
         ((real rational) (R-real it))
@@ -1621,6 +1629,7 @@
     (trace scheme->R)
     
     (define-foreign-variable R-null-type int "NILSXP")
+    (define-foreign-variable R-symbol-type int "SYMSXP")
     (define-foreign-variable R-boolean-type int "LGLSXP")
     (define-foreign-variable R-integer-type int "INTSXP")
     (define-foreign-variable R-real-type int "REALSXP")
@@ -1635,6 +1644,7 @@
       (= (R-type value) type))
     
     (define R-null? (cut R-type? <> R-null-type))
+    (define R-symbol? (cut R-type? <> R-symbol-type))
     (define R-boolean? (cut R-type? <> R-boolean-type))
     (define R-integer? (cut R-type? <> R-integer-type))
     (define R-real? (cut R-type? <> R-real-type))
@@ -1708,6 +1718,14 @@
          i)
         (make-rectangular real imaginary)))
     
+    (define (scheme-symbol symbol)
+      (string->symbol
+       ((foreign-lambda*
+         c-string
+         ((SEXP symbol))
+         "C_return(CHAR(PRINTNAME((SEXP) symbol)));")
+        symbol)))
+    
     (define scheme-vector
       (case-lambda
        ((value ref)
@@ -1743,6 +1761,8 @@
          (scheme-vector-or-scalar it R-boolean-ref))
         (R-complex
          (scheme-vector-or-scalar it R-complex-ref))
+        (R-symbol
+         (scheme-symbol it))
         (else value)))
     
     (trace R->scheme)
