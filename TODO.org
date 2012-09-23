@@ -1,3 +1,4 @@
+* TODO Memoize function lookups?
 * TODO Named arguments
   Little state machine with last keyword argument read; exhaust the
   named and unnamed arguments.
