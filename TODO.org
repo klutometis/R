@@ -1445,8 +1445,6 @@
        value))
     
     (define (R->scheme value)
-      (debug (foreign-value "NILSXP" int)
-             ((foreign-lambda int "TYPEOF" c-pointer) value))
       (match value
         ((? R-null?) '())
         ((? R-integer?)
@@ -1459,14 +1457,12 @@
     
     (define (R-eval f . args)
       (let ((R-values (map scheme->R args)))
-        (debug R-values)
         (let ((function
                ((foreign-lambda*
                  SEXP
                  ((c-string name))
                  "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
                 f)))
-          (debug function)
           (let ((return
                  ((foreign-lambda*
                    SEXP
