@@ -12,6 +12,15 @@
 
   It seems like a natural translation of symbols; what's its
   relationship to =Rf_install=?
+* TODO Modularize type-translations.
+  That way, users can modify =R->scheme= and =scheme->R=; since
+  there's no easy =typeof= (there is, however, =C_block_header= and
+  =C_header_bits=), can we search linearly through arbitrary
+  predicates?
+
+  We have to do that anyway, since things like =complex?= apply
+  equally to integers; and we have to specify that the =integer?=
+  predicate comes first.
 * TODO Memoize function lookups?
 * TODO Named arguments
   Little state machine with last keyword argument read; exhaust the
