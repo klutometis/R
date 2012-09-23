@@ -128,6 +128,9 @@
   Just a stab in the dark, but Chicken has =C_i_getprop= and
   =C_putprop=; can properties be hidden in the header of objects
   somehow?
+
+  We could deal with properties in an ad-hoc fashion: Oh, the vector
+  has names? Hash table. Oh, the vector has dims? Matrix. &c.
 * TODO What does =NULL= correspond to?
   Is it simply =()=? That's a little weird, though, with null-vectors.
 
