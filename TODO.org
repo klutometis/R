@@ -1,6 +1,17 @@
 * TODO Demo
   The demo/vignette should use some of those Clojure-like constructs
   for sexiness.
+* TODO Names
+  From [[http://stat.ethz.ch/R-manual/R-devel/library/base/html/name.html][Names and Symbols]]:
+
+  #+BEGIN_QUOTE
+  A ‘name’ (also known as a ‘symbol’) is a way to refer to R objects
+  by name (rather than the value of the object, if any, bound to that
+  name).
+  #+END_QUOTE
+
+  It seems like a natural translation of symbols; what's its
+  relationship to =Rf_install=?
 * TODO Memoize function lookups?
 * TODO Named arguments
   Little state machine with last keyword argument read; exhaust the
