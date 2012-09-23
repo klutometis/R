@@ -1479,6 +1479,7 @@
     (define R-boolean? (cut R-type? <> R-boolean))
     (define R-integer? (cut R-type? <> R-integer))
     (define R-real? (cut R-type? <> R-real))
+    (define R-complex? (cut R-type? <> R-complex))
     (define R-string? (cut R-type? <> R-string))
     (define R-list? (cut R-type? <> R-list))
     
