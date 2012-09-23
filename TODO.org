@@ -1848,6 +1848,7 @@
     ;; (debug (R-eval "geom_point"))
     ;; (debug (R-eval "plot" (R-eval "c" 1 2 3 4)))
     (debug (R-eval "plot" (R-eval "rnorm" 47)))
+    (debug (R-eval "qplot" 2))
     ;; (debug (R-eval "geom_point"))
     ;; (debug (R-eval "%+%"
     ;;                (R-eval "qplot" '#(1 2 3 4) '#(3 4 5 6))
