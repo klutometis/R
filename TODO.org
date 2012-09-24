@@ -196,7 +196,9 @@
   opaque R-forms; possibly, when you need to modify the R-forms is
   exceptional (at which point you eval).
 
-  =R= could be a wrapper around =R-apply=, therefore.
+  =R= could be a wrapper around =R-apply=, therefore; and, say, =R*=
+  could be =R-eval=. Arguments could be in quasiquote, such that we
+  can reference things.
 * TODO =NULL= probably depends upon the type.
   If it's a vector or list, empty. =(void)= is lossy, isn't it?
 * TODO R-eval-string
