@@ -1951,6 +1951,7 @@
                                named-args))
               (unnamed-args (map scheme->R unnamed-args))
               (f (R-function f)))
+          (debug named-args unnamed-args)
           ((foreign-lambda*
             SEXP
             ((SEXP f)
