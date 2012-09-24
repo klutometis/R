@@ -1666,6 +1666,8 @@
     END
     )
     
+    (debug? #f)
+    
     (define (named×unnamed arguments)
       (let iter ((arguments arguments)
                  (keyword #f)
@@ -1773,7 +1775,7 @@
         (vector (R-vector it))
         (else it)))
     
-    ;; (trace scheme->R)
+    (trace scheme->R)
     
     (define-foreign-variable R-null-type int "NILSXP")
     (define-foreign-variable R-symbol-type int "SYMSXP")
@@ -1882,8 +1884,8 @@
          "C_return(CHAR(PRINTNAME((SEXP) symbol)));")
         symbol)))
     
-    ;; (trace scheme-symbol)
-    ;; (trace R-symbol)
+    (trace scheme-symbol)
+    (trace R-symbol)
     
     (define scheme-vector
       (case-lambda
@@ -1934,7 +1936,6 @@
        name))
     
     (define (R-apply f args)
-    ;; (trace R-apply)
       (receive (named-args unnamed-args)
         (named×unnamed args)
         (let ((named-args (map (match-lambda ((name . arg))
@@ -1963,6 +1964,7 @@
            named-args
            unnamed-args))))
     
+    (trace R-apply)
     
     (define (R-eval f . args)
       (R->scheme (R-apply f args)))
