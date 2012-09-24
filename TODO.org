@@ -93,19 +93,15 @@
                 (,%lambda (record out)
                      (,%write (,%record->vector record) out)))))))))
     
-    (R-eval "library" 'deldir)
-    
     (define n-vertices (make-parameter 100))
     
-    (define R-voronoi
-      (case-lambda
-       (() (R-voronoi (n-vertices)))
-       ((n-vertices)
-        (R-apply "$" (list
-                      (R-apply "deldir"
-                               (list (R-apply "rnorm" (list n-vertices))
-                                     (R-apply "rnorm" (list n-vertices))))
-                      "dirsgs")))))
+    (define (R-voronoi n-vertices)
+      (R-apply "library" '(deldir))
+      (R-apply "$" (list
+                    (R-apply "deldir"
+                             (list (R-apply "rnorm" (list n-vertices))
+                                   (R-apply "rnorm" (list n-vertices))))
+                    "dirsgs")))
     
     (define (voronoi R-voronoi)
       (R-eval "apply" R-voronoi 1 (R-apply "get" '("list"))))
@@ -164,24 +160,49 @@
                   (iter rest point)
                   (iter rest end))))))
     
-    (R-apply "source" '("voronoi.R"))
+    (define-record-and-printer tessellation
+      R-object
+      points
+      start
+      end)
     
-    (let* ((R-voronoi (R-voronoi))
-           (voronoi (voronoi R-voronoi)))
-      (let* ((neighbors (neighbors voronoi))
-             (points (points neighbors)))
-        (let ((start (start points))
-              (end (end points)))
-          (R-eval "plot.voronoi"
-                  R-voronoi
-                  (vector (point-x start)
-                          (point-x end))
-                  (vector (point-y start)
-                          (point-y end))
-                  (point-x start)
-                  (point-y start)
-                  (point-x end)
-                  (point-y end)))))
+    (define tessellate
+      (case-lambda
+       (() (tessellate (n-vertices)))
+       ((n-vertices)
+        (let* ((R-voronoi (R-voronoi n-vertices))
+               (voronoi (voronoi R-voronoi)))
+          (let* ((neighbors (neighbors voronoi))
+                 (points (points neighbors)))
+            (let ((start (start points))
+                  (end (end points)))
+              (make-tessellation
+               R-voronoi
+               points
+               start
+               end)))))))
+    
+    (define (plot-tessellation tessellation path filename)
+      (R-apply "source" '("voronoi.R"))
+      (let ((path-x (vector-map (lambda (i point) (point-x point)) path))
+            (path-y (vector-map (lambda (i point) (point-y point)) path))
+            (start (tessellation-start tessellation))
+            (end (tessellation-end tessellation)))
+        (R-eval "plot.voronoi"
+                (tessellation-R-object tessellation)
+                path-x
+                path-y
+                (point-x start)
+                (point-y start)
+                (point-x end)
+                (point-y end))))
+    
+    (let ((tessellation (tessellate)))
+      (plot-tessellation tessellation
+                         (vector (tessellation-start tessellation)
+                                 (tessellation-end tessellation))
+                         "harro.png"))
+    
   #+END_SRC
 * =eval= dispatches on type, and will do symbol-lookups.
   In other words, we don't have to do =findFun=.
