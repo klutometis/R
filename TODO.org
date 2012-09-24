@@ -1657,6 +1657,7 @@
          matchable
          moremacros
          numbers
+         srfi-1
          test)
     
     (debug? #f)
