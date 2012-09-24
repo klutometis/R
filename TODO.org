@@ -1666,6 +1666,25 @@
     END
     )
     
+    (define (named×unnamed arguments)
+      (let iter ((arguments arguments)
+                 (keyword #f)
+                 (named '())
+                 (unnamed '()))
+        (if (null? arguments)
+            (values (reverse named) (reverse unnamed))
+            (let ((argument (car arguments))
+                  (rest (cdr arguments)))
+              (if (keyword? argument)
+                  (iter rest argument named unnamed)
+                  (if keyword
+                      (iter rest
+                            #f
+                            (alist-cons (keyword->string keyword)
+                                        argument named)
+                            unnamed)
+                      (iter rest #f named (cons argument unnamed))))))))
+    
     (define-foreign-type SEXP
       (c-pointer "SEXP")
       values
@@ -1915,28 +1934,35 @@
        name))
     
     (define (R-apply f args)
-      (let ((args (map scheme->R args))
-            (f (R-function f)))
-        ((foreign-lambda*
-          SEXP
-          ((SEXP f)
-           (int error)
-           (scheme-object args))
-          "int nargs = C_unfix(C_i_length(args));"
-          "SEXP expression = allocVector(LANGSXP, nargs + 1);"
-          "SETCAR(expression, (SEXP) f);"
-          "SEXP ei = CDR(expression);"
-          "while (!C_truep(C_i_nullp(args))) {"
-          "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(args)));"
-          "  args = C_i_cdr(args);"
-          "  ei = CDR(ei);"
-          "}"
-          "C_return(R_tryEval(expression, R_GlobalEnv, &error));")
-         f
-         0
-         args)))
-    
     ;; (trace R-apply)
+      (receive (named-args unnamed-args)
+        (named×unnamed args)
+        (let ((named-args (map (match-lambda ((name . arg))
+                                 (cons name (scheme->R arg)))
+                               named-args))
+              (unnamed-args (map scheme->R unnamed-args))
+              (f (R-function f)))
+          ((foreign-lambda*
+            SEXP
+            ((SEXP f)
+             (int error)
+             (scheme-object named)
+             (scheme-object unnamed))
+            "int nargs = C_unfix(C_fixnum_plus(C_i_length(named), C_i_length(unnamed)));"
+            "SEXP expression = allocVector(LANGSXP, nargs + 1);"
+            "SETCAR(expression, (SEXP) f);"
+            "SEXP ei = CDR(expression);"
+            "while (!C_truep(C_i_nullp(unnamed))) {"
+            "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(unnamed)));"
+            "  unnamed = C_i_cdr(unnamed);"
+            "  ei = CDR(ei);"
+            "}"
+            "C_return(R_tryEval(expression, R_GlobalEnv, &error));")
+           f
+           0
+           named-args
+           unnamed-args))))
+    
     
     (define (R-eval f . args)
       (R->scheme (R-apply f args)))
