@@ -1,5 +1,6 @@
 * =eval= dispatches on type, and will do symbol-lookups.
   In other words, we don't have to do =findFun=.
+* TODO Raise a Scheme condition when evaluation fails.
 * TODO Convenience functions for `[`, &c.?
 * TODO R-form
 # <<R-form>
