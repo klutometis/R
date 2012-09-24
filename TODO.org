@@ -1659,6 +1659,8 @@
          numbers
          test)
     
+    (debug? #f)
+    
     #>
     #include <Rembedded.h>
     #include <Rinternals.h>
@@ -1672,8 +1674,6 @@
                                     "--args"});
     END
     )
-    
-    (debug? #f)
     
     (define (named×unnamed arguments)
       (let iter ((arguments arguments)
