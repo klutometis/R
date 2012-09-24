@@ -1,0 +1,13 @@
+(include "setup-helper")
+
+(verify-extension-name "R")
+
+(setup-shared-extension-module
+ 'R
+ (extension-version 0.1)
+ compile-options: '(-X cock
+                       "`R CMD config --cppflags`"
+                       "`R CMD config --ldflags`"))
+
+(run (cock -o R.wiki R.scm R-core.scm "||"
+           echo cock not "installed:" not creating documentation))

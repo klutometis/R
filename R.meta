@@ -1,0 +1,11 @@
+((synopsis "Interface to R")
+ (author "Peter Danenberg")
+ (category ffi)
+ (license "BSD")
+ (depends big-chicken
+          debug
+          matchable
+          moremacros
+          numbers)
+ (test-depends test)
+ (foreign-depends "R compiled with --enable-R-shlib"))
