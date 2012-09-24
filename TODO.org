@@ -826,69 +826,69 @@
   #+BEGIN_SRC c :tangle Reval.c
     #include <assert.h>
     #include <string.h>
-    
+        
     #include <Rinternals.h>
     #include <Rdefines.h>
     #include <Rembedded.h>
-    
+        
     #include <chicken.h>
-    
+        
     SEXP toR(C_word arg) {
-      if (C_truep(C_i_flonump(arg))) {
-        return ScalarReal(C_flonum_magnitude(arg));
-      } else if (C_truep(C_fixnump(arg))) {
-        return ScalarInteger(C_num_to_int(arg));
-      } else if (C_truep(C_booleanp(arg))) {
-        return ScalarLogical(C_truep(arg) ? 1 : 0);
-      } else if (C_truep(C_stringp(arg))) {
-        return ScalarString(Rf_mkChar(C_string_or_null(arg)));
-      } else if (C_truep(C_vectorp(arg))) {
-        /* Is this where we need to type the vector; or can we just
-           VECSXP? We probably need to type the vector. Can we stick e.g.
-           STRSXP in an INTSXP, though?
-    
-           See e.g. getListElementType in RPythonConverters.c; see also
-           do_c_dflt in bind.c. What about calling the actual R function?
-           It's too bad do_c or do_c_dflt aren't exposed in
-           Rinternals.h.
-    
-           The call to R is slower, but guaranteed to be semantically
-           correct. */
-        int length = C_unfix(C_i_vector_length(arg));
-        SEXP c = allocVector(LANGSXP, length + 1);
-        SEXP ci = c;
-        SETCAR(c, Rf_findFun(Rf_install("c"), R_GlobalEnv));
-        int i;
-        for (i = 0; i < length; i++) {
-          ci = CDR(ci);
-          SETCAR(ci, toR(C_i_vector_ref(arg, C_fix(i))));
-        }
-        int error = 0;
-        return R_tryEval(c, R_GlobalEnv, &error);
-      } else if (C_truep(C_pointerp(arg))) {
-        return *((SEXP *) C_c_pointer_or_null(arg));
+    if (C_truep(C_i_flonump(arg))) {
+    return ScalarReal(C_flonum_magnitude(arg));
+    } else if (C_truep(C_fixnump(arg))) {
+      return ScalarInteger(C_num_to_int(arg));
+     } else if (C_truep(C_booleanp(arg))) {
+      return ScalarLogical(C_truep(arg) ? 1 : 0);
+     } else if (C_truep(C_stringp(arg))) {
+      return ScalarString(Rf_mkChar(C_string_or_null(arg)));
+     } else if (C_truep(C_vectorp(arg))) {
+      /* Is this where we need to type the vector; or can we just
+         VECSXP? We probably need to type the vector. Can we stick e.g.
+         STRSXP in an INTSXP, though?
+        
+         See e.g. getListElementType in RPythonConverters.c; see also
+         do_c_dflt in bind.c. What about calling the actual R function?
+         It's too bad do_c or do_c_dflt aren't exposed in
+         Rinternals.h.
+        
+         The call to R is slower, but guaranteed to be semantically
+         correct. */
+      int length = C_unfix(C_i_vector_length(arg));
+      SEXP c = allocVector(LANGSXP, length + 1);
+      SEXP ci = c;
+      SETCAR(c, Rf_findFun(Rf_install("c"), R_GlobalEnv));
+      int i;
+      for (i = 0; i < length; i++) {
+        ci = CDR(ci);
+        SETCAR(ci, toR(C_i_vector_ref(arg, C_fix(i))));
       }
-      /* What the fuck is this, if not above? There should be some
-         symmetry: if I don't know what the hell it is, it's a pointer
-         (and vice versa). */
-      return R_NilValue;
+      int error = 0;
+      return R_tryEval(c, R_GlobalEnv, &error);
+     } else if (C_truep(C_pointerp(arg))) {
+      return *((SEXP *) C_c_pointer_or_null(arg));
+     }
+    /* What the fuck is this, if not above? There should be some
+       symmetry: if I don't know what the hell it is, it's a pointer
+       (and vice versa). */
+     return R_NilValue;
     }
-    
+        
     void Reval(C_word c, C_word self, C_word k, C_word name, C_word args) {
       int nargs = C_num_to_int(C_i_length(args));
       SEXP expression = allocVector(LANGSXP, nargs + 1);
       /* Have to check this for R_NilValue; see e.g. RNamedCall.c. */
       SEXP function = Rf_findFun(Rf_install(C_c_string(name)), R_GlobalEnv);
-    
+        
       SETCAR(expression, function);
       SEXP iterexp = CDR(expression);
-    
+        
       while (!C_truep(C_i_nullp(args))) {
         SETCAR(iterexp, toR(C_i_car(args)));
         args = C_i_cdr(args);
         iterexp = CDR(iterexp);
       }
-    
+        
       int error = 0;
       SEXP Rvalue = R_tryEval(expression, R_GlobalEnv, &error);
       if (!error) {
@@ -910,10 +910,10 @@
                 /* We're going to have to make a continuation and do CPS
                    for this to work; should we try the Schemely way
                    first?
-    
+        
                    Calling closures over continuations gets deep into the
                    bowels; call_cc_values_wrapper uses e.g. C_save.
-    
+        
                    Yup, heard it from sjamaan: memory corruption if you
                    return; have to create a closure object. */
               }
@@ -996,7 +996,7 @@
             /* We probably need to allocate a new structure, copy Rvalue
                thither, and free at some point; don't we? Or at least
                protect the value?
-    
+        
                PROTECT and UNPROTECT preserve within calls, while
                R_PreserveObject and R_ReleaseObject preserve past calls;
                see:
@@ -1007,7 +1007,6 @@
       }
       C_kontinue(k, C_SCHEME_UNDEFINED);
     }
-    
   #+END_SRC
 
   #+BEGIN_SRC scheme :tangle R-test.scm
@@ -2217,7 +2216,6 @@
     
     R-less-c: R-less-c.c
         csc $(R_FLAGS) -o $@ $^
-    
   #+END_SRC
 * DONE Tests
   CLOSED: [2012-09-23 Sun 04:31]
