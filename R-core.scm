@@ -252,6 +252,7 @@ END
         (scheme-vector value ref length))))
 
 (define (R->scheme value)
+  #;
   (debug 'r->scheme
          value
          (R-length value)
@@ -295,7 +296,6 @@ END
                            named-args))
           (unnamed-args (map scheme->R unnamed-args))
           (f (R-function f)))
-      (debug named-args unnamed-args)
       ((foreign-lambda*
         SEXP
         ((SEXP f)
