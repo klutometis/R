@@ -1,5 +1,3 @@
-(debug? #f)
-
 (foreign-declare
  #<<END
  #include <Rembedded.h>

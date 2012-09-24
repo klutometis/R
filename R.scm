@@ -21,4 +21,5 @@ R-expressions.")
        moremacros
        numbers)
 
-  (include "R-core.scm"))
+  (parameterize ((debug? #f))
+    (include "R-core.scm")))
