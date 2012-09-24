@@ -28,6 +28,39 @@
 * TODO Named arguments
   Little state machine with last keyword argument read; exhaust the
   named and unnamed arguments.
+
+  #+BEGIN_SRC scheme
+    (use debug
+         srfi-1
+         srfi-8
+         test)
+    
+    (define keyword->symbol (compose string->symbol keyword->string))
+    
+    (define (named×unnamed . arguments)
+      (let iter ((arguments arguments)
+                 (keyword #f)
+                 (named '())
+                 (unnamed '()))
+        (if (null? arguments)
+            (values (reverse named) (reverse unnamed))
+            (let ((argument (car arguments))
+                  (rest (cdr arguments)))
+              (if (keyword? argument)
+                  (iter rest argument named unnamed)
+                  (if keyword
+                      (iter rest
+                            #f
+                            (alist-cons (keyword->string keyword)
+                                        argument named)
+                            unnamed)
+                      (iter rest #f named (cons argument unnamed))))))))
+    
+    (receive (named unnamed)
+      (named×unnamed 'a 'b 'c harro: 'e why: jes: 'omg)
+      (test named '(("harro" . e) ("jes" . omg)))
+      (test unnamed '(a b c)))
+  #+END_SRC
 * TODO Complex numbers don't respect exactness.
   For example, 3+3i becomes 3.0+3.0i; this is an artifact of the fact
   that complex numbers are represented by pairs of doubles in R.
