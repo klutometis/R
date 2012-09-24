@@ -1,4 +1,187 @@
 * TODO Named lists as records?
+* TODO Get the AIMA example to work.
+  #+BEGIN_SRC R :tangle voronoi.R
+    library(debug)
+    library(ggplot2)
+    
+    plot.voronoi <- function(voronoi,
+                             path.x,
+                             path.y,
+                             start.x,
+                             start.y,
+                             end.x,
+                             end.y) {
+      png('voronoi.png', width=1024, heigh=768)
+      q <- qplot(voronoi$x1,
+                 voronoi$y1,
+                 xlab="",
+                 ylab="") +
+      opts(legend.position='none') +
+      geom_point(aes(x=start.x,
+                     y=start.y,
+                     alpha=1.0),
+                 shape=1,
+                 size=5) +
+      geom_text(aes(x=start.x,
+                    y=start.y,
+                    label='Start',
+                    alpha=1.0),
+                size=3) +
+      geom_point(aes(x=end.x,
+                     y=end.y,
+                     alpha=1.0),
+                 shape=1,
+                 size=5) +
+      geom_text(aes(x=end.x,
+                    y=end.y,
+                    label='End',
+                    alpha=1.0),
+                size=3) +
+      geom_segment(aes(x=voronoi$x1,
+                       xend=voronoi$x2,
+                       y=voronoi$y1,
+                       yend=voronoi$y2,
+                       alpha=1.0)) +
+      geom_text(aes(x=voronoi$x1 + (voronoi$x2 - voronoi$x1) / 2,
+                    y=voronoi$y1 + (voronoi$y2 - voronoi$y1) / 2,
+                    label=signif(sqrt((voronoi$x2 - voronoi$x1) ^ 2 +
+                      (voronoi$y2 - voronoi$y1) ^ 2),
+                      digits=2),
+                    alpha=1.0),
+                size=3) +
+      ## We have to do this in segments, if we want to be able to model
+      ## bi-directional search.
+      geom_path(aes(x=path.x,
+                    y=path.y,
+                    alpha=1.0),
+                color='red',
+                size=2.0) +
+      geom_point(aes(x=voronoi$x1,
+                     y=voronoi$y1,
+                     alpha=1.0))
+      plot(q)
+      dev.off()
+    }
+    
+  #+END_SRC
+
+  #+BEGIN_SRC scheme :tangle voronoi.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug
+         lolevel
+         matchable
+         R
+         srfi-1
+         vector-lib)
+    
+    (import-for-syntax matchable)
+    
+    (define-syntax define-record-and-printer
+      (lambda (expression rename compare)
+        (match expression
+          ((_ record . fields)
+           (let ((%define-record (rename 'define-record))
+                 (%define-record-printer (rename 'define-record-printer))
+                 (%begin (rename 'begin))
+                 (%lambda (rename 'lambda))
+                 (%write (rename 'write))
+                 (%record->vector (rename 'record->vector)))
+             `(,%begin
+               (,%define-record ,record ,@fields)
+               (,%define-record-printer
+                ,record
+                (,%lambda (record out)
+                     (,%write (,%record->vector record) out)))))))))
+    
+    (R-eval "library" 'deldir)
+    
+    (define n-vertices (make-parameter 100))
+    
+    (define R-voronoi
+      (case-lambda
+       (() (R-voronoi (n-vertices)))
+       ((n-vertices)
+        (R-apply "$" (list
+                      (R-apply "deldir"
+                               (list (R-apply "rnorm" (list n-vertices))
+                                     (R-apply "rnorm" (list n-vertices))))
+                      "dirsgs")))))
+    
+    (define (voronoi R-voronoi)
+      (R-eval "apply" R-voronoi 1 (R-apply "get" '("list"))))
+    
+    (define-record-and-printer point x y)
+    
+    (define (voronoi-for-each f voronoi)
+      (vector-for-each
+       (lambda (i x)
+         (match x
+           (#(#(x1 y1 x2 y2 i1 i2 e1 e2))
+            (f x1 y1 x2 y2))))
+       voronoi))
+    
+    (define (neighbors voronoi)
+      (let ((neighbors (make-hash-table)))
+        (voronoi-for-each
+         (lambda (x1 y1 x2 y2)
+           (let ((p1 (make-point x1 y1))
+                 (p2 (make-point x2 y2)))
+             (hash-table-update!/default neighbors
+                                         p1
+                                         (lambda (neighbors)
+                                           (lset-adjoin eq? neighbors p2))
+                                         '())
+             (hash-table-update!/default neighbors
+                                         p2
+                                         (lambda (neighbors)
+                                           (lset-adjoin eq? neighbors p1))
+                                         '())))
+         voronoi)
+        neighbors))
+    
+    (define (points neighbors)
+      (hash-table-keys neighbors))
+    
+    (define (start points)
+      (let iter ((points points)
+                 (start (make-point +inf +inf)))
+        (if (null? points)
+            start
+            (let ((point (car points))
+                  (rest (cdr points)))
+              (if (< (point-x point) (point-x start))
+                  (iter rest point)
+                  (iter rest start))))))
+    
+    (define (end points)
+      (let iter ((points points)
+                 (end (make-point -inf -inf)))
+        (if (null? points)
+            end
+            (let ((point (car points))
+                  (rest (cdr points)))
+              (if (> (point-x point) (point-x end))
+                  (iter rest point)
+                  (iter rest end))))))
+    
+    (R-apply "source" '("voronoi.R"))
+    
+    (let* ((R-voronoi (R-voronoi))
+           (voronoi (voronoi R-voronoi)))
+      (let* ((neighbors (neighbors voronoi))
+             (points (points neighbors)))
+        (let ((start (start points))
+              (end (end points)))
+          (R-eval "plot.voronoi"
+                  R-voronoi
+                  (vector (point-x start)
+                          (point-x end))
+                  (vector (point-y start)
+                          (point-y end))
+                  (point-x start)
+                  (point-y start)
+                  (point-x end)
+                  (point-y end)))))
+  #+END_SRC
 * =eval= dispatches on type, and will do symbol-lookups.
   In other words, we don't have to do =findFun=.
 * TODO Raise a Scheme condition when evaluation fails.
