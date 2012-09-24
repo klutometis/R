@@ -1967,6 +1967,13 @@
             "  unnamed = C_i_cdr(unnamed);"
             "  ei = CDR(ei);"
             "}"
+            "while (!C_truep(C_i_nullp(named))) {"
+            "  SEXP arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named));"
+            "  SET_TAG(arg, install(C_c_string(C_i_caar(named))));"
+            "  SETCAR(ei, arg);"
+            "  named = C_i_cdr(named);"
+            "  ei = CDR(ei);"
+            "}"
             "C_return(R_tryEval(expression, R_GlobalEnv, &error));")
            f
            0
