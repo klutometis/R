@@ -1985,6 +1985,9 @@
     (define (R-eval f . args)
       (R->scheme (R-apply f args)))
     
+    (test "Pi via named arguments to get"
+          3.14159265358979
+          (R-eval "get" x: "pi"))
     (test 2 (R-eval "c" 2))
     (test '#(2 3) (R-eval "c" 2 3))
     (test '#(2 3 4 5) (R-eval "c" 2 3 (R-eval "c" 4 5)))
