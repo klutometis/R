@@ -3,6 +3,7 @@
  (category ffi)
  (license "BSD")
  (depends big-chicken
+          cock
           debug
           matchable
           moremacros
