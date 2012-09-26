@@ -5,14 +5,21 @@
 END
 )
 
-(foreign-code
- #<<END
- Rf_initEmbeddedR(4, (char*[]) {"R-less-c",
-                                "--slave",
-                                "--vanilla",
-                                "--args"});
+(let ((r-home (or (get-environment-variable "R_HOME")
+                  (begin
+                    (warning "R_HOME not set: running `R RHOME'; better set R_HOME.")
+                    (string-trim-right (capture (R RHOME)))))))
+  (call-with-environment-variables
+   `(("R_HOME" . ,r-home))
+   (lambda ()
+     (foreign-code
+      #<<END
+      Rf_initEmbeddedR(4, (char*[]) {"R-less-c",
+                                     "--slave",
+                                     "--vanilla",
+                                     "--args"}) ;
 END
-)
+))))
 
 (define (named×unnamed arguments)
   (let iter ((arguments arguments)
