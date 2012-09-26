@@ -3,10 +3,12 @@
  (category ffi)
  (license "BSD")
  (depends big-chicken
+          call-with-environment-variables
           cock
           debug
           matchable
           moremacros
-          numbers)
+          numbers
+          shell)
  (test-depends test)
  (foreign-depends "R compiled with --enable-R-shlib"))
