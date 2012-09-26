@@ -12,14 +12,17 @@ R-expressions.")
   (import chicken
           foreign
           scheme
-          srfi-1)
+          srfi-1
+          srfi-13)
 
   (use big-chicken
+       call-with-environment-variables
        debug
        lolevel
        matchable
        moremacros
-       numbers)
+       numbers
+       shell)
 
   (parameterize ((debug? #f))
     (include "R-core.scm")))
