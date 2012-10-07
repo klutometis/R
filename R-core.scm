@@ -348,7 +348,11 @@ END
         "while (!C_truep(C_i_nullp(named))) {"
         "  SEXP arg;"
         "  PROTECT(arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named)));"
-        "  SET_TAG(ei, install(C_c_string(C_i_caar(named))));"
+        ;; Why the fuck do we have to null-terminate the string here?
+        ;; Should we do a copy instead?
+        "  char *name = C_c_string(C_i_caar(named));"
+        "  name[C_unfix(C_i_string_length(C_i_caar(named)))] = '\\0';"
+        "  SET_TAG(ei, install(name));"
         "  SETCAR(ei, arg);"
         "  named = C_i_cdr(named);"
         "  ei = CDR(ei);"
