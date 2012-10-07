@@ -401,5 +401,8 @@ END
     `(R-eval ',@(cdr expression))))
 
 (define-syntax R*
+  @("Evaluate an R-expression and translate into Scheme."
+    (expression "The expression to evaluate")
+    (@to "Scheme-object"))
   (lambda (expression rename compare)
     `(R->scheme (R ,@(cdr expression)))))
