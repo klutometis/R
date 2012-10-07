@@ -58,6 +58,10 @@
       (make-vector 2 (make-rectangular 3.0 3.0))
       (R* rep (make-rectangular 3 3) 2))
 
+(test "Named arguments"
+      '#(3 3)
+      (R* rep.int times: 2 x: 3))
+
 (let ((env (R new.env R-missing)))
   (R assign "a" 2 pos: env)
   (test-assert "Opaque object"
