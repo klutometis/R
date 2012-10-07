@@ -1,3 +1,23 @@
+* TODO =R-eval= to distinguish atoms, quotations from application.
+  #+BEGIN_SRC scheme :tangle R-eval.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug R test expand-full)
+    
+    ;; (trace R-eval)
+    
+    ;; (R 2)
+    ;; (R '(ls))
+    ;; (R `(ls))
+    ;; (R (ls (new.env)))
+    (debug
+     (R* (ls (new.env (new.env))))
+     (R (assign "a" 2))
+     (R* (get x: "a"))
+     (R* 2)
+     (R* a)
+     (R* "harro")
+     (R b))
+    
+  #+END_SRC
 * TODO Explicitly shut down R, too.
   See e.g. =Rf_endEmbeddedR= from =Rembedded.h=.
 * TODO Named lists as records?
