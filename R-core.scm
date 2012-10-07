@@ -354,4 +354,11 @@ END
     (f "Function as a string to apply")
     (args "Arguments to apply to f")
     (@to "Scheme-object"))
-  (R->scheme (R-apply f args)))
+  ;; Shit; we need to distinguish between e.g. lookups and calling a
+  ;; niladic function. Either we special-case niladic application, or
+  ;; require parens and look out for e.g. quote.
+  ;; (if (null? args)
+  ;;     (scheme->R f)
+  ;;     (R-apply f args))
+  (R-apply f args))
+
