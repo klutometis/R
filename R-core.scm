@@ -336,24 +336,29 @@ END
          (scheme-object named)
          (scheme-object unnamed))
         "int nargs = C_unfix(C_fixnum_plus(C_i_length(named), C_i_length(unnamed)));"
-        "SEXP expression = allocVector(LANGSXP, nargs + 1);"
+        "SEXP expression, ei;"
+        "PROTECT(expression = allocVector(LANGSXP, nargs + 1));"
         "SETCAR(expression, (SEXP) f);"
-        "SEXP ei = CDR(expression);"
+        "PROTECT(ei = CDR(expression));"
         "while (!C_truep(C_i_nullp(unnamed))) {"
         "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(unnamed)));"
         "  unnamed = C_i_cdr(unnamed);"
         "  ei = CDR(ei);"
         "}"
         "while (!C_truep(C_i_nullp(named))) {"
-        "  SEXP arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named));"
-        "  SET_TAG(CAR(ei), install(C_c_string(C_i_caar(named))));"
+        "  SEXP arg;"
+        "  PROTECT(arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named)));"
+        "  SET_TAG(ei, install(C_c_string(C_i_caar(named))));"
         "  SETCAR(ei, arg);"
         "  named = C_i_cdr(named);"
         "  ei = CDR(ei);"
+        "  UNPROTECT(1);"
         "}"
         "R_tryEval(expression, R_GlobalEnv, &error); "
-        "SEXP val = R_tryEval(expression, R_GlobalEnv, &error);"
-        "return((SEXP) val);")
+        "SEXP val;"
+        "PROTECT(val = R_tryEval(expression, R_GlobalEnv, &error));"
+        "UNPROTECT(3);"
+        "C_return((SEXP) val);")
        f
        0
        named-args
