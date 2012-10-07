@@ -1,3 +1,7 @@
+* TODO Lists
+  Should =R*= deep-translate lists; or can we also do a superficial
+  collection of opaque objects? Nah; we'll use R-accessors if we want
+  to slice.
 * TODO Explicitly shut down R, too.
   See e.g. =Rf_endEmbeddedR= from =Rembedded.h=.
 * TODO Should AIMA have an R-library for dependencies?
