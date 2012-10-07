@@ -1,11 +1,36 @@
-* TODO Lists
+* TODO Explicitly shut down R, too.
+  See e.g. =Rf_endEmbeddedR= from =Rembedded.h=.
+* TODO Named lists as records?
+* TODO Raise a Scheme condition when evaluation fails.
+* TODO Convenience functions for `[`, &c.?
+* TODO =NULL= probably depends upon the type.
+  If it's a vector or list, empty. =(void)= is lossy, isn't it?
+* TODO R-eval-string
+* TODO Demo
+  The demo/vignette should use some of those Clojure-like constructs
+  for sexiness.
+* TODO Modularize type-translations.
+  That way, users can modify =R->scheme= and =scheme->R=; since
+  there's no easy =typeof= (there is, however, =C_block_header= and
+  =C_header_bits=), can we search linearly through arbitrary
+  predicates?
+
+  We have to do that anyway, since things like =complex?= apply
+  equally to integers; and we have to specify that the =integer?=
+  predicate comes first.
+* TODO Complex numbers don't respect exactness.
+  For example, 3+3i becomes 3.0+3.0i; this is an artifact of the fact
+  that complex numbers are represented by pairs of doubles in R.
+* TODO Levels
+* TODO Graphics subsystem
+  There has to be a running thread, &c.
+* DONE Lists
+  CLOSED: [2012-10-07 Sun 04:22]
+  - CLOSING NOTE [2012-10-07 Sun 04:22] \\
+    Deep translation
   Should =R*= deep-translate lists; or can we also do a superficial
   collection of opaque objects? Nah; we'll use R-accessors if we want
   to slice.
-* TODO Explicitly shut down R, too.
-  See e.g. =Rf_endEmbeddedR= from =Rembedded.h=.
-* TODO Should AIMA have an R-library for dependencies?
-* TODO Named lists as records?
 * DONE Get the AIMA example to work.
   CLOSED: [2012-10-06 Sat 11:47]
   #+BEGIN_SRC R :tangle voronoi.R
@@ -211,11 +236,8 @@
                          "harro.png"))
     
   #+END_SRC
-* =eval= dispatches on type, and will do symbol-lookups.
-  In other words, we don't have to do =findFun=.
-* TODO Raise a Scheme condition when evaluation fails.
-* TODO Convenience functions for `[`, &c.?
-* TODO R-form
+* DONE R-form
+  CLOSED: [2012-10-07 Sun 04:21]
 # <<R-form>
   Macro that takes unquoted symbols; does memoization on the lookup.
   Can it distinguish between function-application and variable-lookup?
@@ -244,21 +266,6 @@
 
   No, =R-eval= takes a language object of some kind; maybe the result
   of calling =R-apply=?
-* TODO =NULL= probably depends upon the type.
-  If it's a vector or list, empty. =(void)= is lossy, isn't it?
-* TODO R-eval-string
-* TODO Demo
-  The demo/vignette should use some of those Clojure-like constructs
-  for sexiness.
-* TODO Modularize type-translations.
-  That way, users can modify =R->scheme= and =scheme->R=; since
-  there's no easy =typeof= (there is, however, =C_block_header= and
-  =C_header_bits=), can we search linearly through arbitrary
-  predicates?
-
-  We have to do that anyway, since things like =complex?= apply
-  equally to integers; and we have to specify that the =integer?=
-  predicate comes first.
 * DONE Named arguments
   CLOSED: [2012-10-06 Sat 11:51]
   Little state machine with last keyword argument read; exhaust the
@@ -300,17 +307,12 @@
   According to =matchArgs= in =match.c=, =CHAR(PRINTNAME(TAG(f)))=
   accesses the named argument. No names? =names= is =NULL=,
   apparently; unnamed arguments get the null-string.
-* TODO Complex numbers don't respect exactness.
-  For example, 3+3i becomes 3.0+3.0i; this is an artifact of the fact
-  that complex numbers are represented by pairs of doubles in R.
-* TODO Levels
-* TODO Graphics subsystem
-  There has to be a running thread, &c.
-* TODO Libraries
-* TODO Function objects
-  Check for them instead of a string and dispatch on those without
-  lookup.
-* TODO Attributes
+* DONE Libraries
+  CLOSED: [2012-10-07 Sun 04:21]
+  - CLOSING NOTE [2012-10-07 Sun 04:21] \\
+    Do it normally with e.g. =(R library "debug")=.
+* DONE Attributes
+  CLOSED: [2012-10-07 Sun 04:21]
   There's not only names to worry about; but other things, too: like
   dimensions for matrices, &c. We might have to come up with a generic
   attributes thing. Which means that every object becomes a record.
@@ -432,23 +434,23 @@
     (use debug R)
     
     (R library "debug")
-    ;; (R debug (R-attributes (R list a: 3)))
-    ;; (R debug (R list a: 3))
-    ;; (R debug (R-attributes (R list 3)))
-    ;; (R debug (R list 3))
-    ;; (R debug (R rep.int 2 3))
     (R debug (R rep.int times: 2 x: 3))
     (R debug (R-attributes (R list a: 2 b: 3) "names"))
     (debug (R* attr (R list a: 2 b: 3) "names"))
-    ;; (debug (R->scheme (R-apply 'rep.int '(times: 2 x: 3))))
-    
   #+END_SRC
-* TODO Initialization function
+* DONE Initialization function
+  CLOSED: [2012-10-07 Sun 04:22]
+  - CLOSING NOTE [2012-10-07 Sun 04:22] \\
+    We're doing it anyway; at least until we have explicit shutdown.
   Isn't it a little rude to initialize on =use=?
-* TODO Parse positional and keyword arguments.
+* DONE Parse positional and keyword arguments.
+  CLOSED: [2012-10-07 Sun 04:22]
   Iterate with a little state machine: last keyword seen, &c. Two
   lists: keyword and positional lists. Pass them to C.
-* TODO =R-value= or =R-get=
+* DONE =R-value= or =R-get=
+  CLOSED: [2012-10-07 Sun 04:23]
+  - CLOSING NOTE [2012-10-07 Sun 04:23] \\
+    Handled by R-eval.
   which is really just a wrapper around =Reval= that calls =get=,
   isn't it; with optional =rho= (environment)?
 * DONE Be able to designate an object opaque.
@@ -2294,6 +2296,12 @@
   - CLOSING NOTE [2012-09-23 Sun 04:31] \\
     Thank the Olympians for Schemely code.
   Possibly related to [[less-in-c]]?
+* CANCELED Should AIMA have an R-library for dependencies?
+  CLOSED: [2012-10-07 Sun 04:22]
+* CANCELED Function objects
+  CLOSED: [2012-10-07 Sun 04:21]
+  Check for them instead of a string and dispatch on those without
+  lookup.
 * CANCELED Memoize function lookups?
   CLOSED: [2012-09-23 Sun 12:47]
   - CLOSING NOTE [2012-09-23 Sun 12:47] \\
@@ -2315,6 +2323,8 @@
   CLOSED: [2012-09-23 Sun 04:31]
   Seems like a shitty thing to have to do by default.
 
+* =eval= dispatches on type, and will do symbol-lookups.
+  In other words, we don't have to do =findFun=.
 * What is SEXP?
   It turns out SEXP is a pointer, after all; see Rinternals.h:
 
