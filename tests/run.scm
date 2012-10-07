@@ -1,63 +1,64 @@
-(use numbers R test)
+(use debug numbers R test)
 
 (test "Pi via named arguments to get"
       3.14159265358979
-      (R-eval "get" x: "pi"))
+      (R* get x: "pi"))
 
 (test "Scalar integer"
       2
-      (R-eval "c" 2))
+      (R* c 2))
 
 (test "Vector integers"
       '#(2 3)
-      (R-eval "c" 2 3))
+      (R* c 2 3))
 
 (test "Nested vector-integers"
       '#(2 3 4 5)
-      (R-eval "c" 2 3 (R-eval "c" 4 5)))
+      (R* c 2 3 (R c 4 5)))
 
 (test "Nested list-integers"
       '#(2 3 #(4 5))
-      (R-eval "list" 2 3 (R-eval "list" 4 5)))
+      (R* list 2 3 (R list 4 5)))
 
 (test "String scalar"
       "harro"
-      (R-eval "c" "harro"))
+      (R* c "harro"))
 
 (test "String vector"
       '#("harro" "harro")
-      (R-eval "rep" "harro" 2))
+      (R* rep "harro" 2))
 
 (test "Scalar real"
       2.1
-      (R-eval "c" 2.1))
+      (R* c 2.1))
 
 (test "Scalar vector"
       '#(2.1 2.1)
-      (R-eval "rep" 2.1 2))
+      (R* rep 2.1 2))
 
 (test "Scalar boolean: false"
       #f
-      (R-eval "c" #f))
+      (R* c #f))
 
 (test "Scalar boolean: true"
       #t
-      (R-eval "c" #t))
+      (R* c #t))
 
 (test "Vector boolean"
       '#(#f #f)
-      (R-eval "rep" #f 2))
+      (R* rep #f 2))
+
 ;; Doesn't respect exactness; i.e., complex numbers are represented
 ;; by doubles in R.
 (test "Scalar complex"
       (make-rectangular 3.0 3.0)
-      (R-eval "c" (make-rectangular 3 3)))
+      (R* c (make-rectangular 3 3)))
 
 (test "Vector complex"
       (make-vector 2 (make-rectangular 3.0 3.0))
-      (R-eval "rep" (make-rectangular 3 3) 2))
+      (R* rep (make-rectangular 3 3) 2))
 
-(let ((env (R-eval "new.env")))
-  (R-eval "assign" "a" 2 R-missing env)
+(let ((env (R new.env R-missing)))
+  (R assign "a" 2 env)
   (test-assert "Opaque object"
-               (R-eval "exists" "a" R-missing env)))
+               (R* exists "a" R-missing env)))
