@@ -362,3 +362,14 @@ END
   ;;     (R-apply f args))
   (R-apply f args))
 
+(define-syntax R
+  (lambda (expression rename compare)
+    (let ((var (cadr expression))
+          (arguments (cddr expression)))
+      `(R-eval ',var ,@arguments))))
+
+(define-syntax R*
+  (lambda (expression rename compare)
+    (let ((var (cadr expression))
+          (arguments (cddr expression)))
+      `(R->scheme (R-eval ',var ,@arguments)))))
