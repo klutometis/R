@@ -223,6 +223,22 @@
   =R= could be a wrapper around =R-apply=, therefore; and, say, =R*=
   could be =R-eval=. Arguments could be in quasiquote, such that we
   can reference things.
+
+  Could it be that a symbol does function or variable lookup: and in
+  the former case, applies; otherwise, gets?
+
+  (I /really/ need examples in =cock=; for which: some kind of
+  markdown for Scheme blocks.)
+
+  Or maybe the opposite: =R= evaluates, =R= merely applies? And by
+  evaluate, I mean: =(compose R->scheme R-apply)=.
+
+  If we were going to do this right, =R-eval= would catch
+  function-like things and send them to apply; =R-eval= is basically
+  just =R->scheme=.
+
+  No, =R-eval= takes a language object of some kind; maybe the result
+  of calling =R-apply=?
 * TODO =NULL= probably depends upon the type.
   If it's a vector or list, empty. =(void)= is lossy, isn't it?
 * TODO R-eval-string
