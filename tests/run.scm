@@ -17,7 +17,7 @@
       (R* c 2 3 (R c 4 5)))
 
 (test "Nested list-integers"
-      '#(2 3 #(4 5))
+      '(2 3 (4 5))
       (R* list 2 3 (R list 4 5)))
 
 (test "String scalar"
