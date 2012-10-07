@@ -11,7 +11,10 @@ R-expressions.")
    R*
    R->scheme
    R-eval
-   R-missing)
+   R-missing
+   R-null
+   R-type
+   R-variable)
 
   (import chicken
           foreign
