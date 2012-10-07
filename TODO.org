@@ -415,6 +415,29 @@
 
   We could deal with properties in an ad-hoc fashion: Oh, the vector
   has names? Hash table. Oh, the vector has dims? Matrix. &c.
+
+  Since we're passing around opaque R-objects now, we'll associate the
+  attributes with that. Can =R*= pass the object back + attributes?
+  Sure! Translating them back into R: pain in the ass. Let's not worry
+  about that for now. What about things like alists, &c.? Befraying
+  the attributes is going to be a pain in the ass. One thing at a
+  time. Alists later, maybe; translating them back, though? How about
+  hash-tables? Whatever.
+
+  #+BEGIN_SRC scheme :tangle attributes.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug R)
+    
+    (R library "debug")
+    ;; (R debug (R-attributes (R list a: 3)))
+    ;; (R debug (R list a: 3))
+    ;; (R debug (R-attributes (R list 3)))
+    ;; (R debug (R list 3))
+    ;; (R debug (R rep.int 2 3))
+    (R debug (R rep.int times: 2 x: 3))
+    (R debug (R list a: 2 b: 3))
+    ;; (debug (R->scheme (R-apply 'rep.int '(times: 2 x: 3))))
+    
+  #+END_SRC
 * TODO Initialization function
   Isn't it a little rude to initialize on =use=?
 * TODO Parse positional and keyword arguments.
