@@ -377,6 +377,7 @@ END
   ;; (if (null? args)
   ;;     (scheme->R f)
   ;;     (R-apply f args))
+  ;; (debug f args)
   (R-apply f args))
 
 (define-syntax R
