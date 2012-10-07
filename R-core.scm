@@ -332,10 +332,8 @@ END
   (receive (named-args unnamed-args)
     (named×unnamed args)
     (let ((named-args (map (match-lambda ((name . arg)
-                                     (cons name (scheme->R arg))))
-                           named-args))
-          (unnamed-args (map scheme->R unnamed-args))
-          (f (R-function f)))
+                                     (cons name arg)))
+                           named-args)))
       ;; (debug named-args unnamed-args f)
       ((foreign-lambda*
         SEXP
