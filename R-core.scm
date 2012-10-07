@@ -121,7 +121,13 @@ END
    string))
 
 (define (R-vector vector)
-  (R-apply "c" (vector->list vector)))
+  (R-apply 'c (vector->list vector)))
+
+(define (R-list list)
+  (R-apply 'list list))
+
+(define (sexp-pointer? object)
+  (tagged-pointer? object 'sexp))
 
 (define (scheme->R value)
   (type-case* value
@@ -133,9 +139,11 @@ END
     (complex (R-complex (real-part it) (imag-part it)))
     (string (R-string it))
     (vector (R-vector it))
-    (else it)))
+    (sexp-pointer it)
+    (list (R-list it))
+    (else (error "Can't translate value -- scheme->R" value))))
 
-(trace scheme->R)
+;; (trace scheme->R)
 
 (define-foreign-variable R-null-type int "NILSXP")
 (define-foreign-variable R-symbol-type int "SYMSXP")
