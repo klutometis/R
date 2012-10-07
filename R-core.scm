@@ -394,10 +394,11 @@ END
         (else (scheme->R expression))))
 
 (define-syntax R
+  @("Evaluate an R-expression."
+    (expression "The expression to evaluate")
+    (@to "R-object"))
   (lambda (expression rename compare)
-    (let ((var (cadr expression))
-          (arguments (cddr expression)))
-      `(R-eval ',var ,@arguments))))
+    `(R-eval ',@(cdr expression))))
 
 (define-syntax R*
   (lambda (expression rename compare)
