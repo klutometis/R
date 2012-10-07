@@ -328,7 +328,7 @@ END
                            named-args))
           (unnamed-args (map scheme->R unnamed-args))
           (f (R-function f)))
-      (debug named-args unnamed-args f)
+      ;; (debug named-args unnamed-args f)
       ((foreign-lambda*
         SEXP
         ((SEXP f)
