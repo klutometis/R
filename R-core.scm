@@ -306,6 +306,13 @@ END
     "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
    name))
 
+(define (R-unbound? variable)
+  ((foreign-lambda*
+    bool
+    ((SEXP variable))
+    "C_return(C_mk_bool((SEXP) variable == R_UnboundValue));")
+   variable))
+
 (define (R-apply f args)
   @("Apply the list of arguments to a function."
     (f "Function as a string to apply")
