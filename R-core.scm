@@ -334,7 +334,7 @@ END
         "}"
         "while (!C_truep(C_i_nullp(named))) {"
         "  SEXP arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named));"
-        ;; "  SET_TAG(arg, install(C_c_string(C_i_caar(named))));"
+        "  SET_TAG(CAR(ei), install(C_c_string(C_i_caar(named))));"
         "  SETCAR(ei, arg);"
         "  named = C_i_cdr(named);"
         "  ei = CDR(ei);"
