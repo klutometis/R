@@ -265,6 +265,9 @@ END
         ((= i length) vector)
       (vector-set! vector i (ref value i))))))
 
+(define (scheme-list value ref)
+  (vector->list (scheme-vector value ref)))
+
 (define (scheme-vector-or-scalar value ref)
   (let ((length (R-length value)))
     (if (= length 1)
@@ -282,7 +285,7 @@ END
     (R-integer
      (scheme-vector-or-scalar it R-integer-ref))
     (R-list
-     (scheme-vector it (compose R->scheme R-vector-ref)))
+     (scheme-list it (compose R->scheme R-vector-ref)))
     (R-string
      (scheme-vector-or-scalar it R-string-ref))
     (R-real
@@ -370,6 +373,4 @@ END
 
 (define-syntax R*
   (lambda (expression rename compare)
-    (let ((var (cadr expression))
-          (arguments (cddr expression)))
-      `(R->scheme (R-eval ',var ,@arguments)))))
+    `(R->scheme (R ,@(cdr expression)))))
