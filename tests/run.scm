@@ -66,3 +66,7 @@
   (R assign "a" 2 pos: env)
   (test-assert "Opaque object"
                (R* exists "a" R-missing env)))
+
+(test "Attributes"
+      '#("a" "b")
+      (R-attributes* (R list a: 1 b: 2) "names"))
