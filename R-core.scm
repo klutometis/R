@@ -316,6 +316,9 @@ END
    object
    name))
 
+(define (R-attributes* object name)
+  (R->scheme (R-attributes object name)))
+
 (define (R-apply f args)
   @("Apply the list of arguments to a function."
     (f "Function as a string to apply")
