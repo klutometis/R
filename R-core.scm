@@ -5,10 +5,11 @@
 END
 )
 
-(let ((r-home (or (get-environment-variable "R_HOME")
-                  (begin
-                    (warning "R_HOME not set: running `R RHOME'; better set R_HOME.")
-                    (string-trim-right (capture (R RHOME)))))))
+(let ((r-home
+       (or (get-environment-variable "R_HOME")
+           (begin
+             (warning "R_HOME not set: running `R RHOME'; better set R_HOME.")
+             (string-trim-right (capture (R RHOME)))))))
   (call-with-environment-variables
    `(("R_HOME" . ,r-home))
    (lambda ()
