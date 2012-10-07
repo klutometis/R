@@ -313,6 +313,17 @@ END
     "C_return(C_mk_bool((SEXP) variable == R_UnboundValue));")
    variable))
 
+(define (R-variable name)
+  (let ((variable
+         ((foreign-lambda*
+           SEXP
+           ((symbol name))
+           "C_return(Rf_findVar(Rf_install(name), R_GlobalEnv));")
+          name)))
+    (if (R-unbound? variable)
+        (error "Unbound R-variable" name)
+        variable)))
+
 (define (R-apply f args)
   @("Apply the list of arguments to a function."
     (f "Function as a string to apply")
