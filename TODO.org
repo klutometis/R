@@ -438,7 +438,7 @@
     ;; (R debug (R list 3))
     ;; (R debug (R rep.int 2 3))
     (R debug (R rep.int times: 2 x: 3))
-    (R debug (R list a: 2 b: 3))
+    (R debug (R-attributes (R list a: 2 b: 3) "names"))
     ;; (debug (R->scheme (R-apply 'rep.int '(times: 2 x: 3))))
     
   #+END_SRC
