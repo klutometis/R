@@ -376,7 +376,10 @@ END
 
 ;; (trace R-apply)
 
-(define (R-eval f . args)
+(define (quotation? expression)
+  (or (eq? (car expression) 'quote)
+      (eq? (car expression) 'quasiquote)))
+
   @("Apply the arguments to a function and evaluate the result."
     (f "Function as a string to apply")
     (args "Arguments to apply to f")
