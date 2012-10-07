@@ -380,18 +380,18 @@ END
   (or (eq? (car expression) 'quote)
       (eq? (car expression) 'quasiquote)))
 
-  @("Apply the arguments to a function and evaluate the result."
-    (f "Function as a string to apply")
-    (args "Arguments to apply to f")
-    (@to "Scheme-object"))
-  ;; Shit; we need to distinguish between e.g. lookups and calling a
-  ;; niladic function. Either we special-case niladic application, or
-  ;; require parens and look out for e.g. quote.
-  ;; (if (null? args)
-  ;;     (scheme->R f)
-  ;;     (R-apply f args))
-  ;; (debug f args)
-  (R-apply f args))
+(define (R-eval expression)
+  @("Evaluate the R-expression."
+    (expression "The expression to evaluate")
+    (@to "R-object"))
+  (cond ((pair? expression)
+         (if (quotation? expression)
+             (scheme->R (cdr expression))
+             (R-apply (R-function (car expression))
+                      (map R-eval (cdr expression)))))
+        ((keyword? expression) expression)
+        ((symbol? expression) (R-variable expression))
+        (else (scheme->R expression))))
 
 (define-syntax R
   (lambda (expression rename compare)
