@@ -10,5 +10,5 @@
           moremacros
           numbers
           shell)
- (test-depends test)
+ (test-depends debug numbers test)
  (foreign-depends "R compiled with --enable-R-shlib"))
