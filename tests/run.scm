@@ -69,4 +69,4 @@
 
 (test "Attributes"
       '#("a" "b")
-      (R-attributes* (R list a: 1 b: 2) "names"))
+      (R* attr (R list a: 1 b: 2) "names"))
