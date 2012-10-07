@@ -10,6 +10,7 @@ R-expressions.")
   (R
    R*
    R-attributes
+   R-attributes*
    R-apply
    R-eval
    R-missing
