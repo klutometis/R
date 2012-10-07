@@ -300,7 +300,7 @@ END
 (define (R-function name)
   ((foreign-lambda*
     SEXP
-    ((c-string name))
+    ((symbol name))
     "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
    name))
 
