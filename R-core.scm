@@ -252,8 +252,8 @@ END
      "C_return(CHAR(PRINTNAME((SEXP) symbol)));")
     symbol)))
 
-(trace scheme-symbol)
-(trace R-symbol)
+;; (trace scheme-symbol)
+;; (trace R-symbol)
 
 (define scheme-vector
   (case-lambda
@@ -295,7 +295,7 @@ END
      (scheme-symbol it))
     (else value)))
 
-(trace R->scheme)
+;; (trace R->scheme)
 
 (define (R-function name)
   ((foreign-lambda*
@@ -316,6 +316,7 @@ END
                            named-args))
           (unnamed-args (map scheme->R unnamed-args))
           (f (R-function f)))
+      ;; (debug named-args unnamed-args f)
       ((foreign-lambda*
         SEXP
         ((SEXP f)
@@ -360,7 +361,7 @@ END
        named-args
        unnamed-args))))
 
-(trace R-apply)
+;; (trace R-apply)
 
 (define (R-eval f . args)
   @("Apply the arguments to a function and evaluate the result."
