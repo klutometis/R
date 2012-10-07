@@ -307,18 +307,6 @@ END
     "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
    name))
 
-(define (R-attributes object name)
-  ((foreign-lambda*
-    SEXP
-    ((SEXP object)
-     (c-string name))
-    "C_return((SEXP) Rf_getAttrib((SEXP) object, Rf_install(name)));")
-   object
-   name))
-
-(define (R-attributes* object name)
-  (R->scheme (R-attributes object name)))
-
 (define (R-apply f args)
   @("Apply the list of arguments to a function."
     (f "Function as a string to apply")
