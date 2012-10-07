@@ -69,6 +69,10 @@ END
   @("R-constant for missing arguments")
   (foreign-value "R_MissingArg" SEXP))
 
+(define R-null
+  @("NULL")
+  (foreign-value "R_NilValue" SEXP))
+
 (define (R-symbol symbol)
   ((foreign-lambda*
     SEXP
