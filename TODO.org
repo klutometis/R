@@ -2,7 +2,8 @@
   See e.g. =Rf_endEmbeddedR= from =Rembedded.h=.
 * TODO Should AIMA have an R-library for dependencies?
 * TODO Named lists as records?
-* TODO Get the AIMA example to work.
+* DONE Get the AIMA example to work.
+  CLOSED: [2012-10-06 Sat 11:47]
   #+BEGIN_SRC R :tangle voronoi.R
     library(debug)
     library(ggplot2)
@@ -254,7 +255,8 @@
   We have to do that anyway, since things like =complex?= apply
   equally to integers; and we have to specify that the =integer?=
   predicate comes first.
-* TODO Named arguments
+* DONE Named arguments
+  CLOSED: [2012-10-06 Sat 11:51]
   Little state machine with last keyword argument read; exhaust the
   named and unnamed arguments.
 
