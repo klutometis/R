@@ -275,11 +275,10 @@ END
         (scheme-vector value ref length))))
 
 (define (R->scheme value)
-  #;
-  (debug 'r->scheme
-         value
-         (R-length value)
-         (R-type value))
+  ;; (debug 'r->scheme
+  ;;        value
+  ;;        (R-length value)
+  ;;        (R-type value))
   (type-case* value
     (R-null (void))
     (R-integer
