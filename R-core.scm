@@ -299,19 +299,34 @@ END
 
 ;; (trace R->scheme)
 
-(define (R-function name)
-  ((foreign-lambda*
-    SEXP
-    ((symbol name))
-    "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
-   name))
-
 (define (R-unbound? variable)
   ((foreign-lambda*
     bool
     ((SEXP variable))
     "C_return(C_mk_bool((SEXP) variable == R_UnboundValue));")
    variable))
+
+(define (R-function name)
+  (let ((function
+         ((foreign-lambda*
+           SEXP
+           ((symbol name))
+           "SEXP f;"
+           "int error;"
+           "puts(name);"
+           "fflush(stdout);"
+           "PROTECT(f = Rf_findFun(Rf_install(name), R_GlobalEnv));"
+           "puts(\"HARROO\");"
+           "fflush(stdout);"
+           "R_tryEval(Rf_lang2(Rf_install(\"library\"), Rf_mkString(\"debug\")), R_GlobalEnv, &error); "
+           "R_tryEval(Rf_lang2(Rf_install(\"debug\"), f), R_GlobalEnv, &error); "
+           "printf(\"unbound: %s\", (f == R_UnboundValue) ? \"yes\" : \"no\"); "
+           "fflush(stdout);"
+           "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
+          name)))
+    (if (not (R-unbound? function))
+        (error "Unbound R-function" name)
+        function)))
 
 (define (R-variable name)
   (let ((variable
@@ -333,7 +348,8 @@ END
     (named×unnamed args)
     (let ((named-args (map (match-lambda ((name . arg)
                                      (cons name arg)))
-                           named-args)))
+                           named-args))
+          (error 0))
       ;; (debug named-args unnamed-args f)
       ((foreign-lambda*
         SEXP
@@ -343,7 +359,7 @@ END
          (scheme-object unnamed))
         "int nargs = C_unfix(C_fixnum_plus(C_i_length(named), C_i_length(unnamed)));"
         "SEXP expression, ei;"
-        "PROTECT(expression = allocVector(LANGSXP, nargs + 1));"
+        "expression = allocVector(LANGSXP, nargs + 1);"
         "SETCAR(expression, (SEXP) f);"
         "PROTECT(ei = CDR(expression));"
         "while (!C_truep(C_i_nullp(unnamed))) {"
@@ -364,13 +380,18 @@ END
         "  ei = CDR(ei);"
         "  UNPROTECT(1);"
         "}"
-        "R_tryEval(expression, R_GlobalEnv, &error); "
-        "SEXP val;"
-        "PROTECT(val = R_tryEval(expression, R_GlobalEnv, &error));"
-        "UNPROTECT(3);"
-        "C_return((SEXP) val);")
+        "UNPROTECT(1);"
+        "C_return(R_tryEval(expression, R_GlobalEnv, &error));"
+        ;; "C_return(R_NilValue);"
+        ;; "PROTECT(val = R_tryEval(expression, R_GlobalEnv, &error));"
+        ;; "UNPROTECT(3);"
+        ;; "printf(\"\\nerror: %s;\", error ? \"yes\" : \"no\"); "
+        ;; "fflush(stdout);"
+        ;; "if (error) C_return((SEXP) R_NilValue);"
+        ;; "C_return((SEXP) val);"
+        )
        f
-       0
+       error
        named-args
        unnamed-args))))
 
