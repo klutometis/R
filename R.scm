@@ -7,13 +7,22 @@
 (module R
   @("The R-module provides functions for applying and evaluating
 R-expressions.")
-  (R-apply R-eval R-missing)
+  (R
+   R*
+   R-apply
+   R-eval
+   R-missing
+   R-null
+   R->scheme
+   scheme->R)
 
   (import chicken
           foreign
           scheme
           srfi-1
           srfi-13)
+
+  (import-for-syntax matchable)
 
   (use big-chicken
        call-with-environment-variables
