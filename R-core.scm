@@ -1,3 +1,17 @@
+@(title "R")
+@(description "R interface for Chicken Scheme")
+@(author "Peter Danenberg")
+@(email "pcd@roxygen.org")
+@(username "klutometis")
+
+@(heading "Overview")
+
+@(text "{{R}} provides a simple way to call R-functions, consisting of the following two forms: {{R}} and {{R*}}. {{R}} evaluates an R-expression, returning an opaque R-pointer that can be passed to other R-functions. Use this, for instance, when you don't need to modify the object in Scheme.
+")
+
+@(text "{{R*}}, on the other hand, evaluates the expression and tries to translate it into Scheme; it understands {{NULL}}, lists, strings, reals, bools, complex numbers and symbols. Everything else is opaque.")
+
+@(heading "Documentation")
 (foreign-declare
  #<<END
  #include <Rembedded.h>
@@ -66,11 +80,11 @@ END
 (define R-null (foreign-value "R_NilValue" SEXP))
 
 (define R-missing
-  @("R-constant for missing arguments")
+  ;; @("R-constant for missing arguments")
   (foreign-value "R_MissingArg" SEXP))
 
 (define R-null
-  @("NULL")
+  ;; @("NULL")
   (foreign-value "R_NilValue" SEXP))
 
 (define (R-symbol symbol)
@@ -349,10 +363,10 @@ END
         variable)))
 
 (define (R-apply f args)
-  @("Apply the list of arguments to a function."
-    (f "Function as a string to apply")
-    (args "List of arguments to apply to f")
-    (@to "R-pointer"))
+  ;; @("Apply the list of arguments to a function."
+  ;;   (f "Function as a string to apply")
+  ;;   (args "List of arguments to apply to f")
+  ;;   (@to "R-pointer"))
   (receive (named-args unnamed-args)
     (named×unnamed args)
     (let ((named-args (map (match-lambda ((name . arg)
@@ -406,9 +420,9 @@ END
       (eq? (car expression) 'quasiquote)))
 
 (define (R-eval expression)
-  @("Evaluate the R-expression."
-    (expression "The expression to evaluate")
-    (@to "R-object"))
+  ;; @("Evaluate the R-expression."
+  ;;   (expression "The expression to evaluate")
+  ;;   (@to "R-object"))
   (cond ((pair? expression)
          (if (quotation? expression)
              (scheme->R (cdr expression))
@@ -419,14 +433,16 @@ END
         (else (scheme->R expression))))
 
 (define-syntax R
-  @("Evaluate an R-expression."
+  @("Evaluate an R-expression; for instance, {{(R (rnorm 2)) => #<tagged pointer sexp 1f40818>}}."
     (expression "The expression to evaluate")
     (@to "R-object"))
   (lambda (expression rename compare)
     (list 'apply 'R-eval (list 'quasiquote (cdr expression)))))
 
 (define-syntax R*
-  @("Evaluate an R-expression and translate into Scheme."
+  @("Evaluate an R-expression and translate it into Scheme;
+for instance, {{(R* (rnorm 2)) => #(-0.0740060993626383
+-1.77269881184448)}}."
     (expression "The expression to evaluate")
     (@to "Scheme-object"))
   (lambda (expression rename compare)

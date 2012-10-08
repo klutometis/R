@@ -1,12 +1,6 @@
-@(title "R")
-@(description "R interface for Chicken Scheme")
-@(author "Peter Danenberg")
-@(email "pcd@roxygen.org")
-@(username "klutometis")
-
 (module R
-  @("The R-module provides functions for applying and evaluating
-R-expressions.")
+;;   @("The R-module provides functions for applying and evaluating
+;; R-expressions.")
   (R
    R*
    R->scheme
