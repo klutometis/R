@@ -41,6 +41,7 @@ END
              (keyword #f)
              (named '())
              (unnamed '()))
+    ;; (debug arguments keyword named unnamed)
     (if (null? arguments)
         (values (reverse named) (reverse unnamed))
         (let ((argument (car arguments))
@@ -135,16 +136,17 @@ END
    string))
 
 (define (R-vector vector)
-  (R-apply 'c (vector->list vector)))
+  (R-eval `(c ,@(vector->list vector))))
 
 (define (R-list list)
-  (R-apply 'list list))
+  (R-eval `(list ,@list)))
 
 (define (sexp-pointer? object)
   (tagged-pointer? object 'sexp))
 
 (define (scheme->R value)
-  ;; (debug value
+  ;; (debug 'scheme->R
+  ;;        value
   ;;        (sexp-pointer? value)
   ;;        (pointer-tag value))
   (type-case* value
@@ -367,6 +369,7 @@ END
   ;;   (f "Function as a string to apply")
   ;;   (args "List of arguments to apply to f")
   ;;   (@to "R-pointer"))
+  ;; (debug 'R-apply f args)
   (receive (named-args unnamed-args)
     (named×unnamed args)
     (let ((named-args (map (match-lambda ((name . arg)
@@ -423,6 +426,7 @@ END
   ;; @("Evaluate the R-expression."
   ;;   (expression "The expression to evaluate")
   ;;   (@to "R-object"))
+  ;; (debug expression)
   (cond ((pair? expression)
          (if (quotation? expression)
              (scheme->R (cdr expression))
