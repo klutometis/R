@@ -423,7 +423,7 @@ END
     (expression "The expression to evaluate")
     (@to "R-object"))
   (lambda (expression rename compare)
-    `(R-eval ',@(cdr expression))))
+    (list 'apply 'R-eval (list 'quasiquote (cdr expression)))))
 
 (define-syntax R*
   @("Evaluate an R-expression and translate into Scheme."
