@@ -307,7 +307,7 @@ END
   ((foreign-lambda*
     bool
     ((SEXP variable))
-    "C_return(C_mk_bool((SEXP) variable == R_UnboundValue));")
+    "C_return((SEXP) variable == R_UnboundValue);")
    variable))
 
 (define (R-function name)
