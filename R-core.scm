@@ -316,19 +316,22 @@ END
            SEXP
            ((symbol name))
            "SEXP f;"
-           "int error;"
-           "puts(name);"
-           "fflush(stdout);"
-           "PROTECT(f = Rf_findFun(Rf_install(name), R_GlobalEnv));"
-           "puts(\"HARROO\");"
-           "fflush(stdout);"
-           "R_tryEval(Rf_lang2(Rf_install(\"library\"), Rf_mkString(\"debug\")), R_GlobalEnv, &error); "
-           "R_tryEval(Rf_lang2(Rf_install(\"debug\"), f), R_GlobalEnv, &error); "
-           "printf(\"unbound: %s\", (f == R_UnboundValue) ? \"yes\" : \"no\"); "
-           "fflush(stdout);"
-           "C_return(Rf_findFun(Rf_install(name), R_GlobalEnv));")
+           "PROTECT(f = Rf_findVar(Rf_install(name), R_GlobalEnv));"
+           "if (TYPEOF(f) == PROMSXP) {"
+           "  PROTECT(f);"
+           "  f = eval(f, R_GlobalEnv);"
+           "  UNPROTECT(1);"
+           "}"
+           "switch (TYPEOF(f)) {"
+           "case CLOSXP:"
+           "case BUILTINSXP:"
+           "case SPECIALSXP:"
+           "  C_return(f);"
+           "default:"
+           "  C_return(R_UnboundValue);"
+           "}")
           name)))
-    (if (not (R-unbound? function))
+    (if (R-unbound? function)
         (error "Unbound R-function" name)
         function)))
 
