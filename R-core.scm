@@ -326,8 +326,10 @@ END
            "case CLOSXP:"
            "case BUILTINSXP:"
            "case SPECIALSXP:"
+           "  UNPROTECT(1);"
            "  C_return(f);"
            "default:"
+           "  UNPROTECT(1);"
            "  C_return(R_UnboundValue);"
            "}")
           name)))
