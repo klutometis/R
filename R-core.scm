@@ -399,7 +399,7 @@ END
          unnamed-args)
         (if (zero? err)
             value
-            (error "R-error" f args))))))
+            (error "R-error (vide supra) -- R-apply"))))))
 
 (define (quotation? expression)
   (or (eq? (car expression) 'quote)
