@@ -1,5 +1,8 @@
 (use debug numbers R test)
 
+(test-error "Test error"
+ (R* (ls "onthoeunth")))
+
 (test "Pi via named arguments to get"
       3.14159265358979
       (R* (get x: "pi")))
