@@ -130,6 +130,9 @@ END
   (tagged-pointer? object 'sexp))
 
 (define (scheme->R value)
+  ;; (debug value
+  ;;        (sexp-pointer? value)
+  ;;        (pointer-tag value))
   (type-case* value
     (null R-null)
     (symbol (R-symbol it))
@@ -278,7 +281,8 @@ END
   ;; (debug 'r->scheme
   ;;        value
   ;;        (R-length value)
-  ;;        (R-type value))
+  ;;        (R-type value)
+  ;;        (pointer-tag value))
   (type-case* value
     (R-null (void))
     (R-integer
