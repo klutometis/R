@@ -355,54 +355,49 @@ END
     (named×unnamed args)
     (let ((named-args (map (match-lambda ((name . arg)
                                      (cons name arg)))
-                           named-args))
-          (error 0))
-      ;; (debug named-args unnamed-args f)
-      ((foreign-lambda*
-        SEXP
-        ((SEXP f)
-         (int error)
-         (scheme-object named)
-         (scheme-object unnamed))
-        "int nargs = C_unfix(C_fixnum_plus(C_i_length(named), C_i_length(unnamed)));"
-        "SEXP expression, ei;"
-        "expression = allocVector(LANGSXP, nargs + 1);"
-        "SETCAR(expression, (SEXP) f);"
-        "PROTECT(ei = CDR(expression));"
-        "while (!C_truep(C_i_nullp(unnamed))) {"
-        "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(unnamed)));"
-        "  unnamed = C_i_cdr(unnamed);"
-        "  ei = CDR(ei);"
-        "}"
-        "while (!C_truep(C_i_nullp(named))) {"
-        "  SEXP arg;"
-        "  PROTECT(arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named)));"
-        ;; Why the fuck do we have to null-terminate the string here?
-        ;; Should we do a copy instead?
-        "  char *name = C_c_string(C_i_caar(named));"
-        "  name[C_unfix(C_i_string_length(C_i_caar(named)))] = '\\0';"
-        "  SET_TAG(ei, install(name));"
-        "  SETCAR(ei, arg);"
-        "  named = C_i_cdr(named);"
-        "  ei = CDR(ei);"
-        "  UNPROTECT(1);"
-        "}"
-        "UNPROTECT(1);"
-        "C_return(R_tryEval(expression, R_GlobalEnv, &error));"
-        ;; "C_return(R_NilValue);"
-        ;; "PROTECT(val = R_tryEval(expression, R_GlobalEnv, &error));"
-        ;; "UNPROTECT(3);"
-        ;; "printf(\"\\nerror: %s;\", error ? \"yes\" : \"no\"); "
-        ;; "fflush(stdout);"
-        ;; "if (error) C_return((SEXP) R_NilValue);"
-        ;; "C_return((SEXP) val);"
-        )
-       f
-       error
-       named-args
-       unnamed-args))))
-
-;; (trace R-apply)
+                           named-args)))
+      (receive (value err)
+        ((foreign-primitive
+          void
+          ((SEXP f)
+           (scheme-object tag)
+           (scheme-object named)
+           (scheme-object unnamed))
+          "int nargs = C_unfix(C_fixnum_plus(C_i_length(named), C_i_length(unnamed)));"
+          "SEXP expression, ei;"
+          "expression = allocVector(LANGSXP, nargs + 1);"
+          "SETCAR(expression, (SEXP) f);"
+          "PROTECT(ei = CDR(expression));"
+          "while (!C_truep(C_i_nullp(unnamed))) {"
+          "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(unnamed)));"
+          "  unnamed = C_i_cdr(unnamed);"
+          "  ei = CDR(ei);"
+          "}"
+          "while (!C_truep(C_i_nullp(named))) {"
+          "  SEXP arg;"
+          "  PROTECT(arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named)));"
+          ;; Why the fuck do we have to null-terminate the string here?
+          ;; Should we do a copy instead?
+          "  char *name = C_c_string(C_i_caar(named));"
+          "  name[C_unfix(C_i_string_length(C_i_caar(named)))] = '\\0';"
+          "  SET_TAG(ei, install(name));"
+          "  SETCAR(ei, arg);"
+          "  named = C_i_cdr(named);"
+          "  ei = CDR(ei);"
+          "  UNPROTECT(1);"
+          "}"
+          "UNPROTECT(1);"
+          "int error = 0;"
+          "SEXP val = R_tryEval(expression, R_GlobalEnv, &error);"
+          "C_word *pointer = C_alloc(C_SIZEOF_TAGGED_POINTER);"
+          "C_values(4, C_SCHEME_UNDEFINED, C_k, C_taggedmpointer(&pointer, tag, val), C_fix(error));")
+         f
+         'sexp
+         named-args
+         unnamed-args)
+        (if (zero? err)
+            value
+            (error "R-error" f args))))))
 
 (define (quotation? expression)
   (or (eq? (car expression) 'quote)
