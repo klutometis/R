@@ -240,7 +240,24 @@ END
     "C_return(Rf_length((SEXP) value));")
    value))
 
+(define (R-boolean-NA? bool)
+  ((foreign-lambda*
+    bool
+    ((bool bool))
+    "C_return(bool == NA_LOGICAL);")
+   bool))
+
 (define (R-boolean-ref vector i)
+  (let ((bool
+         ((foreign-lambda*
+           bool
+           ((SEXP vector)
+            (int i))
+           "C_return(LOGICAL((SEXP) vector)[i]);")
+          vector
+          i)))
+    (if (R-boolean-NA? bool) NA bool)))
+
   ((foreign-lambda*
     bool
     ((SEXP vector)
