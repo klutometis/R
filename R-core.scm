@@ -16,6 +16,7 @@
  #<<END
  #include <Rembedded.h>
  #include <Rinternals.h>
+ #include <R_ext/Arith.h>
 END
 )
 
