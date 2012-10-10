@@ -287,15 +287,29 @@ END
           i)))
     (if (R-NA? ref) NA ref)))
 
+(define (R-string-NA? string i)
   ((foreign-lambda*
-    SEXP
-    ((SEXP vector)
+    bool
+    ((SEXP string)
      (int i))
-    "C_return(VECTOR_ELT((SEXP) vector, i));")
-   vector
+    "C_return(STRING_ELT((SEXP) string, i) == NA_STRING);")
+   string
    i))
 
 (define (R-string-ref vector i)
+  (if (R-string-NA? vector i)
+      NA
+      ((foreign-lambda*
+        c-string
+        ((SEXP vector)
+         (int i))
+        "if (STRING_ELT((SEXP) vector, i) == NA_STRING)"
+        "  C_return(NA_STRING);"
+        "else"
+        "  C_return(CHAR(STRING_ELT((SEXP) vector, i)));")
+       vector
+       i)))
+
   ((foreign-lambda*
     c-string
     ((SEXP vector)
