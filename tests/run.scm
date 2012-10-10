@@ -91,8 +91,8 @@
       (R* (c "1" ,NA)))
 
 (test "Complex NA"
-      "#(3.0+3.0i +nan.0+nan.0i)"
-      (->string (R* (c ,(make-rectangular 3 3) ,NA))))
+      `#(3.0+3.0i ,NA)
+      (R* (c ,(make-rectangular 3 3) ,NA)))
 
 (test "Boolean NA"
       '#(#f #t)
