@@ -155,11 +155,13 @@ END
        integer)))
 
 (define (R-real real)
-  ((foreign-lambda*
-    SEXP
-    ((double real))
-    "C_return(ScalarReal(real));")
-   real))
+  (if (nan? real)
+      R-NaN
+      ((foreign-lambda*
+        SEXP
+        ((double real))
+        "C_return(ScalarReal(real));")
+       real)))
 
 (define (R-complex real imaginary)
   ((foreign-lambda*
