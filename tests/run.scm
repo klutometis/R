@@ -74,12 +74,30 @@
       '#("a" "b")
       (R* (attr (list a: 1 b: 2) "names")))
 
-(R (library "ggplot2"))
-;; (let ((bp (R (+ (ggplot PlantGrowth (aes x: group y: weight fill: group)) (geom_boxplot)))))
-;;   (R (plot ,bp))
-;;   (R (Sys.sleep 2)))
-;; (let ((plot (R (ggplot mtcars (aes (factor "cy1") mpg)))))
-;;   (R (%+% plot (geom_boxplot))))
-(let ((p (R (ggplot mpg (aes displ hwy)))))
-  (R (%+% ,p (geom_point)))
-  (R (Sys.sleep 1)))
+;;; String here, because we can't otherwise compare NaNs.
+(test "NaN and infinity"
+      "#(1.0 2.0 3.0 +nan.0 +nan.0 +inf.0 -inf.0)"
+      (->string (R* (c 1 2 3 ,+nan.0 ,-nan.0 ,+inf.0 ,-inf.0))))
+
+(test "Scalar NA" NA (R* ,NA))
+
+;;; Can't compare min-int, either.
+(test "Integer NA"
+      `#(1 2 3 ,NA)
+      (R* (c 1 2 3 ,NA)))
+
+(test "String NA"
+      `#("1" ,NA)
+      (R* (c "1" ,NA)))
+
+(test "Complex NA"
+      "#(3.0+3.0i +nan.0+nan.0i)"
+      (->string (R* (c ,(make-rectangular 3 3) ,NA))))
+
+(test "Boolean NA"
+      '#(#f #t)
+      (R* (c #f ,NA)))
+
+(test "Real NA"
+      `#(1 ,NA)
+      (R* (c 1.0 ,NA)))
