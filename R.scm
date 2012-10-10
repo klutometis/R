@@ -18,8 +18,7 @@
 
   (import-for-syntax matchable)
 
-  (use (only aima define-record-and-printer)
-       big-chicken
+  (use big-chicken
        call-with-environment-variables
        debug
        lolevel
