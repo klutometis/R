@@ -238,15 +238,6 @@ END
     "C_return(Rf_length((SEXP) value));")
    value))
 
-;; (define (R-symbol-ref vector i)
-;;   ((foreign-lambda*
-;;     c-string
-;;     ((SEXP vector)
-;;      (int i))
-;;     "C_return(CHAR(PRINTNAME((SEXP) vector)[i]));")
-;;    vector
-;;    i))
-
 (define (R-boolean-ref vector i)
   ((foreign-lambda*
     bool
