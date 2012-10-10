@@ -144,11 +144,15 @@ END
    boolean))
 
 (define (R-integer integer)
-  ((foreign-lambda*
-    SEXP
-    ((int integer))
-    "C_return(ScalarInteger(integer));")
-   integer))
+  (if (infinite? integer)
+      (if (positive? integer)
+          R-inf+
+          R-inf-)
+      ((foreign-lambda*
+        SEXP
+        ((int integer))
+        "C_return(ScalarInteger(integer));")
+       integer)))
 
 (define (R-real real)
   ((foreign-lambda*
