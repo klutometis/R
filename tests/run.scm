@@ -101,3 +101,7 @@
 (test "Real NA"
       `#(1 ,NA)
       (R* (c 1.0 ,NA)))
+
+(test "List NA"
+      `("harro" ,NA)
+      (R* (list "harro" ,NA)))
