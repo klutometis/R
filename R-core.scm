@@ -42,7 +42,6 @@ END
              (keyword #f)
              (named '())
              (unnamed '()))
-    ;; (debug arguments keyword named unnamed)
     (if (null? arguments)
         (values (reverse named) (reverse unnamed))
         (let ((argument (car arguments))
@@ -146,10 +145,6 @@ END
   (tagged-pointer? object 'sexp))
 
 (define (scheme->R value)
-  ;; (debug 'scheme->R
-  ;;        value
-  ;;        (sexp-pointer? value)
-  ;;        (pointer-tag value))
   (type-case* value
     (null R-null)
     (symbol (R-symbol it))
@@ -272,9 +267,6 @@ END
      "C_return(CHAR(PRINTNAME((SEXP) symbol)));")
     symbol)))
 
-;; (trace scheme-symbol)
-;; (trace R-symbol)
-
 (define scheme-vector
   (case-lambda
    ((value ref)
@@ -295,11 +287,6 @@ END
         (scheme-vector value ref length))))
 
 (define (R->scheme value)
-  ;; (debug 'r->scheme
-  ;;        value
-  ;;        (R-length value)
-  ;;        (R-type value)
-  ;;        (pointer-tag value))
   (type-case* value
     (R-null (void))
     (R-integer
@@ -317,8 +304,6 @@ END
     (R-symbol
      (scheme-symbol it))
     (else value)))
-
-;; (trace R->scheme)
 
 (define (R-unbound? variable)
   ((foreign-lambda*
