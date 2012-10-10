@@ -192,6 +192,7 @@ END
 
 (define (scheme->R value)
   (type-case* value
+    (NA R-NA)
     (null R-null)
     (symbol (R-symbol it))
     (boolean (R-boolean it))
@@ -325,6 +326,7 @@ END
 
 (define (R->scheme value)
   (type-case* value
+    (R-NA NA)
     (R-null (void))
     (R-integer
      (scheme-vector-or-scalar it R-integer-ref))
