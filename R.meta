@@ -6,6 +6,7 @@
           call-with-environment-variables
           cock
           debug
+          define-record-and-printer
           matchable
           moremacros
           numbers

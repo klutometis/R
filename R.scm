@@ -21,6 +21,7 @@
   (use big-chicken
        call-with-environment-variables
        debug
+       define-record-and-printer
        lolevel
        matchable
        moremacros
