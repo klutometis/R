@@ -258,22 +258,23 @@ END
           i)))
     (if (R-boolean-NA? bool) NA bool)))
 
+(define (R-integer-NA? i)
   ((foreign-lambda*
     bool
-    ((SEXP vector)
-     (int i))
-    "C_return(LOGICAL((SEXP) vector)[i]);")
-   vector
+    ((int i))
+    "C_return(i == NA_INTEGER);")
    i))
 
 (define (R-integer-ref vector i)
-  ((foreign-lambda*
-    int
-    ((SEXP vector)
-     (int i))
-    "C_return(INTEGER((SEXP) vector)[i]);")
-   vector
-   i))
+  (let ((int
+         ((foreign-lambda*
+           int
+           ((SEXP vector)
+            (int i))
+           "C_return(INTEGER((SEXP) vector)[i]);")
+          vector
+          i)))
+    (if (R-integer-NA? int) NA int)))
 
 (define (R-vector-ref vector i)
   ((foreign-lambda*
