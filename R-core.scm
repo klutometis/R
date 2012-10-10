@@ -277,6 +277,16 @@ END
     (if (R-integer-NA? int) NA int)))
 
 (define (R-vector-ref vector i)
+  (let ((ref
+         ((foreign-lambda*
+           SEXP
+           ((SEXP vector)
+            (int i))
+           "C_return(VECTOR_ELT((SEXP) vector, i));")
+          vector
+          i)))
+    (if (R-NA? ref) NA ref)))
+
   ((foreign-lambda*
     SEXP
     ((SEXP vector)
