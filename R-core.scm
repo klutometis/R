@@ -151,7 +151,7 @@ END
         SEXP
         ((int integer))
         "C_return(ScalarInteger(integer));")
-       integer)))
+       (inexact->exact integer))))
 
 (define (R-real real)
   (if (nan? real)
