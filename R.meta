@@ -2,7 +2,8 @@
  (author "Peter Danenberg")
  (category ffi)
  (license "BSD")
- (depends big-chicken
+ (depends aima
+          big-chicken
           call-with-environment-variables
           cock
           debug
