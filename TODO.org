@@ -5,8 +5,9 @@
 * TODO Levels
 * DONE =inf=
   CLOSED: [2012-10-10 Wed 00:52]
-* DONE =NaN=
-  CLOSED: [2012-10-10 Wed 00:52]
+* TODO =NaN=
+  We still have to do it in the other direction, just like we did with
+  =NA=; don't we?
 * DONE =NA=
   CLOSED: [2012-10-10 Wed 00:52]
   It's a little shitty to have to =,R-NA= and to have weird INT_MIN
