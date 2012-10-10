@@ -105,6 +105,30 @@ END
   ;; @("NULL")
   (foreign-value "R_NilValue" SEXP))
 
+(define R-NA
+  ((foreign-lambda*
+    SEXP
+    ()
+    "C_return(ScalarLogical(NA_LOGICAL));")))
+
+(define R-inf+
+  ((foreign-lambda*
+    SEXP
+    ()
+    "C_return(ScalarReal(R_PosInf));")))
+
+(define R-inf-
+  ((foreign-lambda*
+    SEXP
+    ()
+    "C_return(ScalarReal(R_NegInf));")))
+
+(define R-NaN
+  ((foreign-lambda*
+    SEXP
+    ()
+    "C_return(ScalarReal(R_NaN));")))
+
 (define (R-symbol symbol)
   ((foreign-lambda*
     SEXP
