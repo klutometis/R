@@ -310,22 +310,23 @@ END
        vector
        i)))
 
+(define (R-real-NA? real)
   ((foreign-lambda*
-    c-string
-    ((SEXP vector)
-     (int i))
-    "C_return(CHAR(STRING_ELT((SEXP) vector, i)));")
-   vector
-   i))
+    bool
+    ((double real))
+    "C_return(ISNA(real));")
+   real))
 
 (define (R-real-ref vector i)
-  ((foreign-lambda*
-    double
-    ((SEXP vector)
-     (int i))
-    "C_return(REAL((SEXP) vector)[i]);")
-   vector
-   i))
+  (let ((real
+         ((foreign-lambda*
+           double
+           ((SEXP vector)
+            (int i))
+           "C_return(REAL((SEXP) vector)[i]);")
+          vector
+          i)))
+    (if (R-real-NA? real) NA real)))
 
 (define (R-complex-ref vector i)
   (receive (real imaginary)
