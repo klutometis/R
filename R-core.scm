@@ -196,7 +196,9 @@ END
     (null R-null)
     (symbol (R-symbol it))
     (boolean (R-boolean it))
+    ;; +inf.0 and -inf.0 are integers.
     (integer (R-integer it))
+    ;; +nan.0 and -nan.0 are reals.
     ((real rational) (R-real it))
     (complex (R-complex (real-part it) (imag-part it)))
     (string (R-string it))
