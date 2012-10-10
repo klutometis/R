@@ -78,7 +78,6 @@ END
          "R_ReleaseObject((SEXP) sexp);")
         sexp)))))
 
-(define R-null (foreign-value "R_NilValue" SEXP))
 (define-record-and-printer NA)
 (define NA (make-NA))
 (define (R-NA? sexp)
