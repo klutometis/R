@@ -405,6 +405,7 @@ record as a vector; see {{define-record}}."
 
 (define (R->scheme value)
   (type-case* value
+    (NA NA)
     (R-NA NA)
     (R-null (void))
     (R-integer
