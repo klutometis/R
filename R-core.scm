@@ -89,6 +89,14 @@ END
     "C_return(Rf_asLogical(R_tryEval(lang2(install(\"is.na\"), (SEXP) sexp), R_GlobalEnv, &error)));")
    sexp))
 
+(define (R-finite? sexp)
+  ((foreign-lambda*
+    bool
+    ((SEXP sexp))
+    "int error;"
+    "C_return(Rf_asLogical(R_tryEval(lang2(install(\"is.finite\"), (SEXP) sexp), R_GlobalEnv, &error)));")
+   sexp))
+
 
 (define R-missing
   ;; @("R-constant for missing arguments")
