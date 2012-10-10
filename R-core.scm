@@ -441,7 +441,6 @@ END
   ;;   (f "Function as a string to apply")
   ;;   (args "List of arguments to apply to f")
   ;;   (@to "R-pointer"))
-  ;; (debug 'R-apply f args)
   (receive (named-args unnamed-args)
     (named×unnamed args)
     (let ((named-args (map (match-lambda ((name . arg)
@@ -498,7 +497,6 @@ END
   ;; @("Evaluate the R-expression."
   ;;   (expression "The expression to evaluate")
   ;;   (@to "R-object"))
-  ;; (debug expression)
   (cond ((pair? expression)
          (if (quotation? expression)
              (scheme->R (cdr expression))
