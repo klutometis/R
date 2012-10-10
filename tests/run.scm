@@ -73,3 +73,13 @@
 (test "Attributes"
       '#("a" "b")
       (R* (attr (list a: 1 b: 2) "names")))
+
+(R (library "ggplot2"))
+;; (let ((bp (R (+ (ggplot PlantGrowth (aes x: group y: weight fill: group)) (geom_boxplot)))))
+;;   (R (plot ,bp))
+;;   (R (Sys.sleep 2)))
+;; (let ((plot (R (ggplot mtcars (aes (factor "cy1") mpg)))))
+;;   (R (%+% plot (geom_boxplot))))
+(let ((p (R (ggplot mpg (aes displ hwy)))))
+  (R (%+% ,p (geom_point)))
+  (R (Sys.sleep 1)))
