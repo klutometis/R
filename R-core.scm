@@ -388,8 +388,10 @@ END
            "C_return(Rf_findVar(Rf_install(name), R_GlobalEnv));")
           name)))
     (if (R-unbound? variable)
-        (error "Unbound R-variable" name)
-        variable)))
+        ;; (error "Unbound R-variable" name)
+        (R-symbol name)
+        variable)
+    ))
 
 (define (R-apply f args)
   ;; @("Apply the list of arguments to a function."
