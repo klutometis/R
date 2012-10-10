@@ -1,12 +1,17 @@
 (module R
 ;;   @("The R-module provides functions for applying and evaluating
 ;; R-expressions.")
-  (R
+  (NA
+   R
    R*
    R->scheme
    R-eval
+   R-inf+
+   R-inf-
    R-missing
    R-null
+   R-NA
+   R-NaN
    R-type
    R-variable)
 
