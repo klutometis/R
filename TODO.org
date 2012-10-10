@@ -1,4 +1,14 @@
-* TODO =R-eval= to distinguish atoms, quotations from application.
+* TODO =inf=
+* TODO =NaN=
+* TODO =NA=
+  It's a little shitty to have to =,R-NA= and to have weird INT_MIN
+  artifacts everywhere; can we have a special =NA= object?
+
+  #+BEGIN_SRC c
+    LibExtern int    R_NaInt;   /* NA_INTEGER:= INT_MIN currently */
+  #+END_SRC
+* DONE =R-eval= to distinguish atoms, quotations from application.
+  CLOSED: [2012-10-09 Tue 14:13]
   #+BEGIN_SRC scheme :tangle R-eval.scm :shebang #!/usr/bin/env chicken-scheme
     (use debug R test expand-full)
     
@@ -21,15 +31,22 @@
 * TODO Explicitly shut down R, too.
   See e.g. =Rf_endEmbeddedR= from =Rembedded.h=.
 * TODO Named lists as records?
-* TODO Raise a Scheme condition when evaluation fails.
-* TODO Convenience functions for `[`, &c.?
-* TODO =NULL= probably depends upon the type.
+* DONE Raise a Scheme condition when evaluation fails.
+  CLOSED: [2012-10-09 Tue 14:14]
+  - CLOSING NOTE [2012-10-09 Tue 14:14] \\
+    Still getting some segfaults on errors, though.
+* CANCELED Convenience functions for `[`, &c.?
+  CLOSED: [2012-10-09 Tue 14:14]
+* CANCELED =NULL= probably depends upon the type.
+  CLOSED: [2012-10-09 Tue 14:14]
   If it's a vector or list, empty. =(void)= is lossy, isn't it?
 * TODO R-eval-string
-* TODO Demo
+* CANCELED Demo
+  CLOSED: [2012-10-09 Tue 14:14]
   The demo/vignette should use some of those Clojure-like constructs
   for sexiness.
-* TODO Modularize type-translations.
+* CANCELED Modularize type-translations.
+  CLOSED: [2012-10-09 Tue 14:14]
   That way, users can modify =R->scheme= and =scheme->R=; since
   there's no easy =typeof= (there is, however, =C_block_header= and
   =C_header_bits=), can we search linearly through arbitrary
@@ -38,11 +55,13 @@
   We have to do that anyway, since things like =complex?= apply
   equally to integers; and we have to specify that the =integer?=
   predicate comes first.
-* TODO Complex numbers don't respect exactness.
+* CANCELED Complex numbers don't respect exactness.
+  CLOSED: [2012-10-09 Tue 14:14]
   For example, 3+3i becomes 3.0+3.0i; this is an artifact of the fact
   that complex numbers are represented by pairs of doubles in R.
 * TODO Levels
-* TODO Graphics subsystem
+* CANCELED Graphics subsystem
+  CLOSED: [2012-10-09 Tue 14:14]
   There has to be a running thread, &c.
 * DONE Lists
   CLOSED: [2012-10-07 Sun 04:22]
