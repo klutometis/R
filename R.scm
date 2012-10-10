@@ -7,14 +7,8 @@
    R*
    R->scheme
    R-eval
-   R-inf+
-   R-inf-
    R-missing
-   R-null
-   R-NA
-   R-NaN
-   R-type
-   R-variable)
+   R-null)
 
   (import chicken
           foreign
