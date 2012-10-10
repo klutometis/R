@@ -81,6 +81,14 @@ END
 (define R-null (foreign-value "R_NilValue" SEXP))
 (define-record-and-printer NA)
 (define NA (make-NA))
+(define (R-NA? sexp)
+  ((foreign-lambda*
+    bool
+    ((SEXP sexp))
+    "int error;"
+    "C_return(Rf_asLogical(R_tryEval(lang2(install(\"is.na\"), (SEXP) sexp), R_GlobalEnv, &error)));")
+   sexp))
+
 
 (define R-missing
   ;; @("R-constant for missing arguments")
