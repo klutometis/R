@@ -2,6 +2,7 @@
 ;;   @("The R-module provides functions for applying and evaluating
 ;; R-expressions.")
   (NA
+   NA?
    R
    R*
    R->scheme
