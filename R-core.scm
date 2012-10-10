@@ -328,19 +328,31 @@ END
           i)))
     (if (R-real-NA? real) NA real)))
 
+(define (R-complex-NA? complex i)
+  ((foreign-lambda*
+    bool
+    ((SEXP complex)
+     (int i))
+    "C_return(ISNA(COMPLEX((SEXP) complex)[i].r) ||"
+    "   ISNA(COMPLEX((SEXP) complex)[i].i));")
+   complex
+   i))
+
 (define (R-complex-ref vector i)
-  (receive (real imaginary)
-    ((foreign-primitive
-      void
-      ((SEXP vector)
-       (int i))
-      "Rcomplex complex = COMPLEX((SEXP) vector)[i];"
-      "C_word *real = C_alloc(C_SIZEOF_FLONUM);"
-      "C_word *imag = C_alloc(C_SIZEOF_FLONUM);"
-      "C_values(4, C_SCHEME_UNDEFINED, C_k, C_flonum(&real, complex.r), C_flonum(&imag, complex.i));")
-     vector
-     i)
-    (make-rectangular real imaginary)))
+  (if (R-complex-NA? vector i)
+      NA
+      (receive (real imaginary)
+        ((foreign-primitive
+          void
+          ((SEXP vector)
+           (int i))
+          "Rcomplex complex = COMPLEX((SEXP) vector)[i];"
+          "C_word *real = C_alloc(C_SIZEOF_FLONUM);"
+          "C_word *imag = C_alloc(C_SIZEOF_FLONUM);"
+          "C_values(4, C_SCHEME_UNDEFINED, C_k, C_flonum(&real, complex.r), C_flonum(&imag, complex.i));")
+         vector
+         i)
+        (make-rectangular real imaginary))))
 
 (define (scheme-symbol symbol)
   (string->symbol
