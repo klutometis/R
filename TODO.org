@@ -1,3 +1,15 @@
+* TODO Segfaults
+  This was sufficient to segfault =R=; is no longer, however:
+
+  #+BEGIN_SRC scheme :tangle test-segfault.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug R)
+    (let* ((x (R (runif 100 0 10)))
+           (y (R (+ 2 (+ (* 3 ,x) (rnorm 100)))))
+           (df (R (data.frame x: ,x y: ,y)))
+           (d (R (lm (as.formula "y ~ x") data: ,df))))
+      (debug (R* (print (attributes (summary ,d))))))
+    
+  #+END_SRC  
 * TODO We need a shortcut for =[=, after all.
   Same thing for =.=, apparently; comes up in e.g. =proto=.
 * TODO Explicitly shut down R, too.
