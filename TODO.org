@@ -1,13 +1,57 @@
+* TODO We need a shortcut for =[=, after all.
+  Same thing for =.=, apparently; comes up in e.g. =proto=.
 * TODO Explicitly shut down R, too.
   See e.g. =Rf_endEmbeddedR= from =Rembedded.h=.
 * TODO Named lists as records?
 * TODO R-eval-string
 * TODO Levels
-* DONE =inf=
-  CLOSED: [2012-10-10 Wed 00:52]
 * TODO =NaN=
   We still have to do it in the other direction, just like we did with
   =NA=; don't we?
+* DONE Statistics example
+  CLOSED: [2012-10-11 Thu 06:05]
+  #+BEGIN_SRC scheme :tangle statistics.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug R)
+    (let* ((x (R (runif 100 0 10)))
+           (y (R (+ 2 (+ (* 3 ,x) (rnorm 100)))))
+           (df (R (data.frame x: ,x y: ,y)))
+           (d (R (lm (as.formula "y ~ x") data: ,df))))
+      (R (print ($ (summary ,d) "ceofficients")))
+      (R (print ($ (summary ,d) "r.squared")))
+      (R (print ($ (summary ,d) "cov.unscaled")))
+      (R (print ($ (summary ,d) "fstatistic")))
+      (R (print (attributes (summary ,d))))
+      (debug (R* ($ (summary ,d) "cov.unscaled"))))
+  #+END_SRC
+* DONE =ggplot= example
+  CLOSED: [2012-10-11 Thu 05:43]
+  #+BEGIN_SRC scheme :tangle ggplot.scm :shebang #!/usr/bin/env chicken-scheme
+    (use debug R)
+    (R (library "ggplot2"))
+    ;; (R (library "plyr"))
+    ;; (let* ((df (R (data.frame
+    ;;               gp: (factor (rep (,(string->symbol "[") letters (: 1 3))
+    ;;                                each: 10))
+    ;;               y: (rnorm 30))))
+    ;;        (ds (R (ddply ,df
+    ;;                      (,(string->symbol ".") gp)
+    ;;                      summarise
+    ;;                      mean: (mean ($ ,df y))
+    ;;                      sd: (sd ($ ,df y))))))
+    ;;   (R (%+% (ggplot ,df (aes x: gp y: y))
+    ;;           (geom_point)
+    ;;           (geom_point data: ,ds
+    ;;                       (aes y: mean)
+    ;;                       color: "red"
+    ;;                       size: 3))))
+    (R (plot (qplot (factor ($ mtcars cyl))
+                    ($ mtcars wt)
+                    data: mtcars
+                    geom: (c "boxplot" "jitter"))))
+    
+  #+END_SRC
+* DONE =inf=
+  CLOSED: [2012-10-10 Wed 00:52]
 * DONE =NA=
   CLOSED: [2012-10-10 Wed 00:52]
   It's a little shitty to have to =,R-NA= and to have weird INT_MIN
