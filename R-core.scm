@@ -83,7 +83,7 @@ END
 (define NA
   @("NA corresponds to R's NA."
     (@example "Don't forget to quasiquote:"
-              (R* (is.na (paste (c 1 ,NA))))))
+              (R* (is.na (c 1 ,NA)))))
   (make-NA))
 (define (R-NA? sexp)
   ((foreign-lambda*
@@ -104,7 +104,7 @@ END
 (define R-missing
   @("R-constant for missing arguments"
     (@example "Selecting columns of matrices; corresponds to {{sum(complete.cases(airquality[, -1]))}}:"
-              (R* (sum (complete.cases (,(string->symbol "[") airquality ,R-missing 1))))))
+              (R* (sum (complete.cases (|[| airquality ,R-missing 1))))))
   (foreign-value "R_MissingArg" SEXP))
 
 (define R-null
