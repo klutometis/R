@@ -534,34 +534,43 @@ END
         (else (scheme->R expression))))
 
 (define-syntax R
-  @("Evaluate an R-expression, but do not try to translate the result
-into a native Scheme object; this is useful when you don't need to
-manipulate the object directly in Scheme."
-    (expression "The expression to evaluate")
+  @("Evaluate R-expressions, but do not try to translate the final
+result into a native Scheme object; this is useful when you don't need
+to manipulate the object directly in Scheme."
+    (expression "An expression to evaluate")
+    (... "More expressions")
     (@to "R-object")
-    (@example "An example from {{ggplot2}}:"
-              (R (library "ggplot2"))
-              (R (plot (qplot (factor ($ mtcars cyl))
+    (@example "An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/doc/ggplot.png|here]]:"
+              (R (library "ggplot2")
+                 (plot (qplot (factor ($ mtcars cyl))
                               ($ mtcars wt)
+                              xlab: "Number of cylinders"
+                              ylab: "Weight (lb/1000)"
+                              main: "1974 Motor Trend car-comparison"
                               data: mtcars
                               geom: (c "boxplot" "jitter")))))
-    (@example "Another plotting example:"
+    (@example "Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:"
               (let ((x (R (sort (rnorm 47)))))
                 (R (plot ,x
-                         xlab: "x"
+                         xlab: "i"
+                         ylab: "Random normals"
                          type: "s"
-                         main: "plot(x, type = \"s\")"))
-                (R (points ,x
+                         main: "Primitive ECDF")
+                   (points ,x
                            cex: 0.5
                            col: "dark red")))))
   (lambda (expression rename compare)
-    (list 'apply 'R-eval (list 'quasiquote (cdr expression)))))
+    `(begin
+       ,@(map (lambda (expression)
+                `(R-eval ,(list 'quasiquote expression)))
+              (cdr expression)))))
 
 (define-syntax R*
-  @("Evaluate an R-expression and translate it into a Scheme object,
-where possible; use this (as opposed to {{R}}) when you need to
-manipulate the value in Scheme."
-    (expression "The expression to evaluate")
+  @("Evaluate R-expressions and translate the final result into a
+Scheme object, where possible (cf. [[#overview]]); use this (as opposed
+to {{R}}) when you need to manipulate the value in Scheme."
+    (expression "An expression to evaluate")
+    (... "More expressions")
     (@to "Scheme-object")
     (@example "An example using classical statistics:"
               (let* ((x (R (runif 100 0 10)))
