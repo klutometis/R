@@ -279,7 +279,8 @@ END
 (define (R-integer-ref vector i)
   (let ((int
          ((foreign-lambda*
-           int
+           ;; Integer instead of int here for 32-bit machines?
+           integer
            ((SEXP vector)
             (int i))
            "C_return(INTEGER((SEXP) vector)[i]);")
