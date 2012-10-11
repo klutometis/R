@@ -1,3 +1,41 @@
+* TODO =NA= fails on 32-bit machines.
+  #+BEGIN_EXAMPLE
+    /root/salmonella-run-publish/chicken/bin/csi -script run.scm < /dev/null
+    
+    Warning: R_HOME not set: running `R RHOME'; better set R_HOME.
+    Test error ........................................................... Error in as.environment(pos) : 
+      no item called "onthoeunth" on the search list
+    [ PASS]
+    Pi via named arguments to get ........................................ [ PASS]
+    Scalar integer ....................................................... [ PASS]
+    Vector integers ...................................................... [ PASS]
+    Nested vector-integers ............................................... [ PASS]
+    Nested list-integers ................................................. [ PASS]
+    String scalar ........................................................ [ PASS]
+    String vector ........................................................ [ PASS]
+    Scalar real .......................................................... [ PASS]
+    Scalar vector ........................................................ [ PASS]
+    Scalar boolean: false ................................................ [ PASS]
+    Scalar boolean: true ................................................. [ PASS]
+    Vector boolean ....................................................... [ PASS]
+    Scalar complex ....................................................... [ PASS]
+    Vector complex ....................................................... [ PASS]
+    Named arguments ...................................................... [ PASS]
+    Opaque object ........................................................ [ PASS]
+    Attributes ........................................................... [ PASS]
+    NaN and infinity ..................................................... [ PASS]
+    Scalar NA ............................................................ [ PASS]
+    Integer NA ........................................................... [ FAIL]
+        expected #(1 2 3 #(NA)) but got #(1 2 3 0)
+        (R* (c 1 2 3 ,NA))
+    String NA ............................................................ [ PASS]
+    Complex NA ........................................................... [ PASS]
+    Boolean NA ........................................................... [ PASS]
+    Real NA .............................................................. [ FAIL]
+        expected #(1 #(NA)) but got #(1 0)
+        (R* (c 1.0 ,NA))
+    List NA .............................................................. [ PASS]
+  #+END_EXAMPLE
 * TODO Segfaults
   This was sufficient to segfault =R=; is no longer, however:
 
