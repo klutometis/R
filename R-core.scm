@@ -1,4 +1,4 @@
-@(title "R")
+@(egg "R")
 @(description "R interface for Chicken Scheme")
 @(author "Peter Danenberg")
 @(email "pcd@roxygen.org")
@@ -6,12 +6,13 @@
 
 @(heading "Overview")
 
-@(text "{{R}} provides a simple way to call R-functions, consisting of the following two forms: {{R}} and {{R*}}. {{R}} evaluates an R-expression, returning an opaque R-pointer that can be passed to other R-functions. Use this, for instance, when you don't need to modify the object in Scheme.
-")
+@(text "{{R}} provides a simple way to call R-functions, consisting of the following two forms: {{R}} and {{R*}}. {{R}} evaluates an R-expression, returning an opaque R-pointer that can be passed to other R-functions. Use this, for instance, when you don't need to modify the object in Scheme.")
 
 @(text "{{R*}}, on the other hand, evaluates the expression and tries to translate it into Scheme; it understands {{NULL}}, lists, strings, reals, bools, complex numbers and symbols. Everything else is opaque.")
 
 @(heading "Documentation")
+@(noop)
+
 (foreign-declare
  #<<END
  #include <Rembedded.h>
@@ -79,7 +80,11 @@ END
         sexp)))))
 
 (define-record-and-printer NA)
-(define NA (make-NA))
+(define NA
+  @("NA corresponds to R's NA."
+    (@example "Don't forget to quasiquote:"
+              (R* (is.na (paste (c 1 ,NA))))))
+  (make-NA))
 (define (R-NA? sexp)
   ((foreign-lambda*
     bool
@@ -97,11 +102,17 @@ END
    sexp))
 
 (define R-missing
-  ;; @("R-constant for missing arguments")
+  @("R-constant for missing arguments"
+    (@example "Selecting columns of matrices; corresponds to {{sum(complete.cases(airquality[, -1]))}}:"
+              (R* (sum (complete.cases (,(string->symbol "[") airquality ,R-missing 1))))))
   (foreign-value "R_MissingArg" SEXP))
 
 (define R-null
-  ;; @("NULL")
+  @("NULL"
+    (@example "Empty list is not null:"
+              (R* (is.null (list))))
+    (@example "{{NULL}}, on the other hand:"
+              (R* (is.null ,R-null))))
   (foreign-value "R_NilValue" SEXP))
 
 (define R-NA
@@ -450,10 +461,11 @@ END
     ))
 
 (define (R-apply f args)
-  ;; @("Apply the list of arguments to a function."
-  ;;   (f "Function as a string to apply")
-  ;;   (args "List of arguments to apply to f")
-  ;;   (@to "R-pointer"))
+  @("Apply the list of arguments to a function."
+    (f "Function as a string to apply")
+    (args "List of arguments to apply to f")
+    (@to "R-pointer")
+    (@internal))
   (receive (named-args unnamed-args)
     (named×unnamed args)
     (let ((named-args (map (match-lambda ((name . arg)
@@ -507,9 +519,10 @@ END
       (eq? (car expression) 'quasiquote)))
 
 (define (R-eval expression)
-  ;; @("Evaluate the R-expression."
-  ;;   (expression "The expression to evaluate")
-  ;;   (@to "R-object"))
+  @("Evaluate the R-expression."
+    (expression "The expression to evaluate")
+    (@to "R-object")
+    (@internal))
   (cond ((pair? expression)
          (if (quotation? expression)
              (scheme->R (cdr expression))
@@ -520,17 +533,40 @@ END
         (else (scheme->R expression))))
 
 (define-syntax R
-  @("Evaluate an R-expression; for instance, {{(R (rnorm 2)) => #<tagged pointer sexp 1f40818>}}."
+  @("Evaluate an R-expression, but do not try to translate the result
+into a native Scheme object; this is useful when you don't need to
+manipulate the object directly in Scheme."
     (expression "The expression to evaluate")
-    (@to "R-object"))
+    (@to "R-object")
+    (@example "An example from {{ggplot2}}:"
+              (R (library "ggplot2"))
+              (R (plot (qplot (factor ($ mtcars cyl))
+                              ($ mtcars wt)
+                              data: mtcars
+                              geom: (c "boxplot" "jitter")))))
+    (@example "Another plotting example:"
+              (let ((x (R (sort (rnorm 47)))))
+                (R (plot ,x
+                         xlab: "x"
+                         type: "s"
+                         main: "plot(x, type = \"s\")"))
+                (R (points ,x
+                           cex: 0.5
+                           col: "dark red")))))
   (lambda (expression rename compare)
     (list 'apply 'R-eval (list 'quasiquote (cdr expression)))))
 
 (define-syntax R*
-  @("Evaluate an R-expression and translate it into Scheme;
-for instance, {{(R* (rnorm 2)) => #(-0.0740060993626383
--1.77269881184448)}}."
+  @("Evaluate an R-expression and translate it into a Scheme object,
+where possible; use this (as opposed to {{R}}) when you need to
+manipulate the value in Scheme."
     (expression "The expression to evaluate")
-    (@to "Scheme-object"))
+    (@to "Scheme-object")
+    (@example "An example using classical statistics:"
+              (let* ((x (R (runif 100 0 10)))
+                     (y (R (+ 2 (+ (* 3 ,x) (rnorm 100)))))
+                     (df (R (data.frame x: ,x y: ,y)))
+                     (d (R (lm (as.formula "y ~ x") data: ,df))))
+                (R* ($ (summary ,d) "cov.unscaled")))))
   (lambda (expression rename compare)
     `(R->scheme (R ,@(cdr expression)))))
