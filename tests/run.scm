@@ -105,3 +105,7 @@
 (test "List NA"
       `("harro" ,NA)
       (R* (list "harro" ,NA)))
+
+(test "Multiple expressions"
+      2
+      (R* (<- "a" 2) a))
