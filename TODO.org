@@ -58,6 +58,8 @@
 * TODO =NaN=
   We still have to do it in the other direction, just like we did with
   =NA=; don't we?
+* DONE Multiple expressions in =R=
+  CLOSED: [2012-10-11 Thu 17:03]
 * DONE Statistics example
   CLOSED: [2012-10-11 Thu 06:05]
   #+BEGIN_SRC scheme :tangle statistics.scm :shebang #!/usr/bin/env chicken-scheme
