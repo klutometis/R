@@ -109,3 +109,5 @@
 (test "Multiple expressions"
       2
       (R* (<- "a" 2) a))
+
+(test-exit)
