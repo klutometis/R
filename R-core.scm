@@ -272,7 +272,7 @@ END
 (define (R-integer-NA? i)
   ((foreign-lambda*
     bool
-    ((int i))
+    ((integer i))
     "C_return(i == NA_INTEGER);")
    i))
 
