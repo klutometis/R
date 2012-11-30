@@ -1,3 +1,5 @@
+* TODO Still a lot of segfaults when doing serious work.
+  Need our own memory management à la =Rcpp=, after all?
 * TODO =NA= fails on 32-bit machines.
   #+BEGIN_EXAMPLE
     /root/salmonella-run-publish/chicken/bin/csi -script run.scm < /dev/null
