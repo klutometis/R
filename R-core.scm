@@ -1,9 +1,3 @@
-@(egg "R")
-@(description "R interface for Chicken Scheme")
-@(author "Peter Danenberg")
-@(email "pcd@roxygen.org")
-@(username "klutometis")
-
 @(heading "Overview")
 
 @(text "{{R}} provides a simple way to call R-functions, consisting of the following two forms: {{R}} and {{R*}}. {{R}} evaluates an R-expression, returning an opaque R-pointer that can be passed to other R-functions. Use this, for instance, when you don't need to modify the object in Scheme.")

@@ -1,6 +1,6 @@
 == R
 
-R interface for Chicken Scheme
+Interface to R
 [[toc:]]
 === Overview
 {{R}} provides a simple way to call R-functions, consisting of the following two forms: {{R}} and {{R*}}. {{R}} evaluates an R-expression, returning an opaque R-pointer that can be passed to other R-functions. Use this, for instance, when you don't need to modify the object in Scheme.
@@ -75,14 +75,14 @@ An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/do
             mtcars
             geom:
             (c "boxplot" "jitter"))))
-  => #<tagged pointer sexp 45acd88>
+  => #<tagged pointer sexp 4550d88>
  
 Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:
  (let ((x (R (sort (rnorm 47)))))
    (R
     (plot ,x xlab: "i" ylab: "Random normals" type: "s" main: "Primitive ECDF")
     (points ,x cex: 0.5 col: "dark red")))
-  => #<tagged pointer sexp 238e458>
+  => #<tagged pointer sexp 2332458>
  
 ==== {{R*}}
 <syntax>(R* expression ...) → Scheme-object</syntax>
@@ -101,15 +101,16 @@ An example using classical statistics:
                                  (df (R (data.frame x: ,x y: ,y)))
                                  (d (R (lm (as.formula "y ~ x") data: ,df))))
    (R* ($ (summary ,d) "cov.unscaled")))
-  => #(0.0500608417072314   -0.00733220951880281 -0.00733220951880281
-  =>    0.00134199118482121)
+  => #(0.0376763802711702  -0.0056175779273358 -0.0056175779273358
+  =>    0.0011402207030145)
  
 === About this egg
 
 ==== Author
 
 [[/users/klutometis|Peter Danenberg]]
-
+==== Repository
+[[https://github.com/klutometis/R]]
 ==== License
 BSD
 ==== Dependencies
