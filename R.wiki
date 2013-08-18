@@ -1,0 +1,143 @@
+== R
+
+R interface for Chicken Scheme
+[[toc:]]
+=== Overview
+{{R}} provides a simple way to call R-functions, consisting of the following two forms: {{R}} and {{R*}}. {{R}} evaluates an R-expression, returning an opaque R-pointer that can be passed to other R-functions. Use this, for instance, when you don't need to modify the object in Scheme.
+
+
+{{R*}}, on the other hand, evaluates the expression and tries to translate it into Scheme; it understands {{NULL}}, lists, strings, reals, bools, complex numbers and symbols. Everything else is opaque.
+
+
+=== Documentation
+==== {{NA}}
+<constant>NA → (make-NA)</constant>
+NA corresponds to R's NA.
+<enscript highlight="scheme">(define NA (make-NA))
+</enscript>
+===== Examples
+Don't forget to quasiquote:
+ (R* (is.na (c 1 ,NA)))
+  => #(#f
+  =>   #t)
+ 
+==== {{R-missing}}
+<constant>R-missing → (foreign-value R_MissingArg SEXP)</constant>
+R-constant for missing arguments
+<enscript highlight="scheme">(define R-missing (foreign-value "R_MissingArg" SEXP))
+</enscript>
+===== Examples
+Selecting columns of matrices; corresponds to {{sum(complete.cases(airquality[, -1]))}}:
+ (R* (sum (complete.cases ([ airquality ,R-missing 1))))
+  => 116
+ 
+==== {{R-null}}
+<constant>R-null → (foreign-value R_NilValue SEXP)</constant>
+NULL
+<enscript highlight="scheme">(define R-null (foreign-value "R_NilValue" SEXP))
+</enscript>
+===== Examples
+Empty list is not null:
+ (R* (is.null (list)))
+  => #f
+ 
+{{NULL}}, on the other hand:
+ (R* (is.null ,R-null))
+  => #t
+ 
+==== {{R}}
+<syntax>(R expression ...) → R-object</syntax>
+Evaluate R-expressions, but do not try to translate the final
+result into a native Scheme object; this is useful when you don't need
+to manipulate the object directly in Scheme.
+; expression : An expression to evaluate
+; ... : More expressions
+<enscript highlight="scheme">(define-syntax
+  R
+  (lambda (expression rename compare)
+    `(begin
+       ,@(map (lambda (expression) `(R-eval ,(list 'quasiquote expression)))
+              (cdr expression)))))
+</enscript>
+===== Examples
+An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/doc/ggplot.png|here]]:
+ (R (library "ggplot2")
+    (plot
+     (qplot (factor ($ mtcars cyl))
+            ($ mtcars wt)
+            xlab:
+            "Number of cylinders"
+            ylab:
+            "Weight (lb/1000)"
+            main:
+            "1974 Motor Trend car-comparison"
+            data:
+            mtcars
+            geom:
+            (c "boxplot" "jitter"))))
+  => #<tagged pointer sexp 45acd88>
+ 
+Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:
+ (let ((x (R (sort (rnorm 47)))))
+   (R
+    (plot ,x xlab: "i" ylab: "Random normals" type: "s" main: "Primitive ECDF")
+    (points ,x cex: 0.5 col: "dark red")))
+  => #<tagged pointer sexp 238e458>
+ 
+==== {{R*}}
+<syntax>(R* expression ...) → Scheme-object</syntax>
+Evaluate R-expressions and translate the final result into a
+Scheme object, where possible (cf. [[#overview]]); use this (as opposed
+to {{R}}) when you need to manipulate the value in Scheme.
+; expression : An expression to evaluate
+; ... : More expressions
+<enscript highlight="scheme">(define-syntax
+  R*
+  (lambda (expression rename compare) `(R->scheme (R ,@(cdr expression)))))
+</enscript>
+===== Examples
+An example using classical statistics:
+ (let* ((x (R (runif 100 0 10))) (y (R (+ 2 (+ (* 3 ,x) (rnorm 100)))))
+                                 (df (R (data.frame x: ,x y: ,y)))
+                                 (d (R (lm (as.formula "y ~ x") data: ,df))))
+   (R* ($ (summary ,d) "cov.unscaled")))
+  => #(0.0500608417072314   -0.00733220951880281 -0.00733220951880281
+  =>    0.00134199118482121)
+ 
+=== About this egg
+
+==== Author
+
+[[/users/klutometis|Peter Danenberg]]
+
+==== License
+BSD
+==== Dependencies
+* [[big-chicken]]
+* [[call-with-environment-variables]]
+* [[cock]]
+* [[debug]]
+* [[define-record-and-printer]]
+* [[matchable]]
+* [[moremacros]]
+* [[numbers]]
+* [[shell]]
+
+==== Versions
+; 0.1 : Initial release
+; 0.1.1 : Add cock.
+; 0.1.2 : Clean up animation code.
+; 0.1.3 : Set R_HOME, if necessary.
+; 0.2 : R- and R*-forms.
+; 0.2.1 : Use the new R-eval forms.
+; 0.2.2 : With a note about cock-utils
+; 0.3 : NA, NaN, inf
+; 0.3.1 : Rid of aima; NA in lists
+; 0.3.2 : Some examples in the docs
+; 0.3.3 : Using sjamaan's idea about integer instead of int for 32-bit machines.
+; 0.3.4 : Multiple R-expressions
+; 0.3.5 : Blindly trying to fix NA for 32-bit.
+; 0.3.6 : Add test-exit.
+==== Colophon
+
+Documented by [[/egg/cock|cock]].
