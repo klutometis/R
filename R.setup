@@ -9,5 +9,7 @@
                        "`R CMD config --cppflags`"
                        "`R CMD config --ldflags`"))
 
-(run (cock -o R.wiki R.scm R-core.scm "||"
-           echo cock-utils not "installed:" not creating documentation))
+(handle-exceptions exn
+  (warning "Not generating documentation")
+  (include "setup-helper-cock")
+  (run-cock -o R.wiki R-core.scm))
