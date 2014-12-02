@@ -76,7 +76,7 @@ END
 (define-record-and-printer NA)
 (define NA
   @("NA corresponds to R's NA."
-    (@example "Don't forget to quasiquote:"
+    (@example-no-eval "Don't forget to quasiquote:"
               (R* (is.na (c 1 ,NA)))))
   (make-NA))
 (define (R-NA? sexp)
@@ -97,15 +97,15 @@ END
 
 (define R-missing
   @("R-constant for missing arguments"
-    (@example "Selecting columns of matrices; corresponds to {{sum(complete.cases(airquality[, -1]))}}:"
+    (@example-no-eval "Selecting columns of matrices; corresponds to {{sum(complete.cases(airquality[, -1]))}}:"
               (R* (sum (complete.cases (|[| airquality ,R-missing 1))))))
   (foreign-value "R_MissingArg" SEXP))
 
 (define R-null
   @("NULL"
-    (@example "Empty list is not null:"
+    (@example-no-eval "Empty list is not null:"
               (R* (is.null (list))))
-    (@example "{{NULL}}, on the other hand:"
+    (@example-no-eval "{{NULL}}, on the other hand:"
               (R* (is.null ,R-null))))
   (foreign-value "R_NilValue" SEXP))
 
@@ -534,7 +534,7 @@ to manipulate the object directly in Scheme."
     (expression "An expression to evaluate")
     (... "More expressions")
     (@to "R-object")
-    (@example "An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/doc/ggplot.png|here]]:"
+    (@example-no-eval "An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/doc/ggplot.png|here]]:"
               (R (library "ggplot2")
                  (plot (qplot (factor ($ mtcars cyl))
                               ($ mtcars wt)
@@ -543,7 +543,7 @@ to manipulate the object directly in Scheme."
                               main: "1974 Motor Trend car-comparison"
                               data: mtcars
                               geom: (c "boxplot" "jitter")))))
-    (@example "Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:"
+    (@example-no-eval "Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:"
               (let ((x (R (sort (rnorm 47)))))
                 (R (plot ,x
                          xlab: "i"
@@ -566,7 +566,7 @@ to {{R}}) when you need to manipulate the value in Scheme."
     (expression "An expression to evaluate")
     (... "More expressions")
     (@to "Scheme-object")
-    (@example "An example using classical statistics:"
+    (@example-no-eval "An example using classical statistics:"
               (let* ((x (R (runif 100 0 10)))
                      (y (R (+ 2 (+ (* 3 ,x) (rnorm 100)))))
                      (df (R (data.frame x: ,x y: ,y)))

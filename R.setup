@@ -1,15 +1,12 @@
-(include "setup-helper")
+(use cock setup-helper-mod)
 
 (verify-extension-name "R")
 
 (setup-shared-extension-module
  'R
- (extension-version "0.3.6")
+ (extension-version "0.3.7")
  compile-options: '(-X cock
                        "`R CMD config --cppflags`"
                        "`R CMD config --ldflags`"))
 
-(handle-exceptions exn
-  (warning "Not generating documentation")
-  (include "setup-helper-cock")
-  (run-cock -o R.wiki R-core.scm))
+(run-cock -o R.wiki R-core.scm)

@@ -18,9 +18,6 @@ NA corresponds to R's NA.
 ===== Examples
 Don't forget to quasiquote:
  (R* (is.na (c 1 ,NA)))
-  => #(#f
-  =>   #t)
- 
 ==== {{R-missing}}
 <constant>R-missing → (foreign-value R_MissingArg SEXP)</constant>
 R-constant for missing arguments
@@ -28,9 +25,7 @@ R-constant for missing arguments
 </enscript>
 ===== Examples
 Selecting columns of matrices; corresponds to {{sum(complete.cases(airquality[, -1]))}}:
- (R* (sum (complete.cases ([ airquality ,R-missing 1))))
-  => 116
- 
+ (R* (sum (complete.cases (|[| airquality ,R-missing 1))))
 ==== {{R-null}}
 <constant>R-null → (foreign-value R_NilValue SEXP)</constant>
 NULL
@@ -39,12 +34,8 @@ NULL
 ===== Examples
 Empty list is not null:
  (R* (is.null (list)))
-  => #f
- 
 {{NULL}}, on the other hand:
  (R* (is.null ,R-null))
-  => #t
- 
 ==== {{R}}
 <syntax>(R expression ...) → R-object</syntax>
 Evaluate R-expressions, but do not try to translate the final
@@ -75,15 +66,11 @@ An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/do
             mtcars
             geom:
             (c "boxplot" "jitter"))))
-  => #<tagged pointer sexp 4550d88>
- 
 Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:
  (let ((x (R (sort (rnorm 47)))))
    (R
     (plot ,x xlab: "i" ylab: "Random normals" type: "s" main: "Primitive ECDF")
     (points ,x cex: 0.5 col: "dark red")))
-  => #<tagged pointer sexp 2332458>
- 
 ==== {{R*}}
 <syntax>(R* expression ...) → Scheme-object</syntax>
 Evaluate R-expressions and translate the final result into a
@@ -101,9 +88,6 @@ An example using classical statistics:
                                  (df (R (data.frame x: ,x y: ,y)))
                                  (d (R (lm (as.formula "y ~ x") data: ,df))))
    (R* ($ (summary ,d) "cov.unscaled")))
-  => #(0.0376763802711702  -0.0056175779273358 -0.0056175779273358
-  =>    0.0011402207030145)
- 
 === About this egg
 
 ==== Author
@@ -125,20 +109,20 @@ BSD
 * [[shell]]
 
 ==== Versions
-; 0.1 : Initial release
-; 0.1.1 : Add cock.
-; 0.1.2 : Clean up animation code.
-; 0.1.3 : Set R_HOME, if necessary.
-; 0.2 : R- and R*-forms.
-; 0.2.1 : Use the new R-eval forms.
-; 0.2.2 : With a note about cock-utils
-; 0.3 : NA, NaN, inf
-; 0.3.1 : Rid of aima; NA in lists
-; 0.3.2 : Some examples in the docs
-; 0.3.3 : Using sjamaan's idea about integer instead of int for 32-bit machines.
-; 0.3.4 : Multiple R-expressions
-; 0.3.5 : Blindly trying to fix NA for 32-bit.
-; 0.3.6 : Add test-exit.
+; [[https://github.com/klutometis/R/releases/tag/0.1|0.1]] : Initial release
+; [[https://github.com/klutometis/R/releases/tag/0.1.1|0.1.1]] : Add cock.
+; [[https://github.com/klutometis/R/releases/tag/0.1.2|0.1.2]] : Clean up animation code.
+; [[https://github.com/klutometis/R/releases/tag/0.1.3|0.1.3]] : Set R_HOME, if necessary.
+; [[https://github.com/klutometis/R/releases/tag/0.2|0.2]] : R- and R*-forms.
+; [[https://github.com/klutometis/R/releases/tag/0.2.1|0.2.1]] : Use the new R-eval forms.
+; [[https://github.com/klutometis/R/releases/tag/0.2.2|0.2.2]] : With a note about cock-utils
+; [[https://github.com/klutometis/R/releases/tag/0.3|0.3]] : NA, NaN, inf
+; [[https://github.com/klutometis/R/releases/tag/0.3.1|0.3.1]] : Rid of aima; NA in lists
+; [[https://github.com/klutometis/R/releases/tag/0.3.2|0.3.2]] : Some examples in the docs
+; [[https://github.com/klutometis/R/releases/tag/0.3.3|0.3.3]] : Using sjamaan's idea about integer instead of int for 32-bit machines.
+; [[https://github.com/klutometis/R/releases/tag/0.3.4|0.3.4]] : Multiple R-expressions
+; [[https://github.com/klutometis/R/releases/tag/0.3.5|0.3.5]] : Blindly trying to fix NA for 32-bit.
+; [[https://github.com/klutometis/R/releases/tag/0.3.6|0.3.6]] : Add test-exit.
 ==== Colophon
 
 Documented by [[/egg/cock|cock]].
