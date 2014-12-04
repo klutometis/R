@@ -1,4 +1,4 @@
-(use debug numbers R test)
+(use numbers R test)
 
 (test-error "Test error"
  (R* (ls "onthoeunth")))

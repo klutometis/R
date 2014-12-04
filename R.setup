@@ -4,7 +4,7 @@
 
 (setup-shared-extension-module
  'R
- (extension-version "0.3.7")
+ (extension-version "0.3.8")
  compile-options: '(-X cock
                        "`R CMD config --cppflags`"
                        "`R CMD config --ldflags`"))

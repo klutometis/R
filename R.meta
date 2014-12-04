@@ -8,11 +8,10 @@
  (depends big-chicken
           call-with-environment-variables
           cock
-          debug
           define-record-and-printer
           matchable
           moremacros
           numbers
           shell)
- (test-depends debug numbers test)
+ (test-depends numbers test)
  (foreign-depends "R compiled with --enable-R-shlib"))
