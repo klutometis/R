@@ -101,7 +101,6 @@ BSD
 * [[big-chicken]]
 * [[call-with-environment-variables]]
 * [[cock]]
-* [[debug]]
 * [[define-record-and-printer]]
 * [[matchable]]
 * [[moremacros]]
@@ -123,6 +122,8 @@ BSD
 ; [[https://github.com/klutometis/R/releases/tag/0.3.4|0.3.4]] : Multiple R-expressions
 ; [[https://github.com/klutometis/R/releases/tag/0.3.5|0.3.5]] : Blindly trying to fix NA for 32-bit.
 ; [[https://github.com/klutometis/R/releases/tag/0.3.6|0.3.6]] : Add test-exit.
+; [[https://github.com/klutometis/R/releases/tag/0.3.7|0.3.7]] : Remove dependency on setup-helper-cock.
+; [[https://github.com/klutometis/R/releases/tag/0.3.8|0.3.8]] : Remove the dependency on debug.
 ==== Colophon
 
 Documented by [[/egg/cock|cock]].

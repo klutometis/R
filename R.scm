@@ -27,7 +27,4 @@
        numbers
        shell)
 
-  ;; TODO: We're not currently doing anything with `debug?'; is it for
-  ;; the sake of an extraneous package?
-  (parameterize ((debug? #f))
-    (include "R-core.scm")))
+  (include "R-core.scm"))
