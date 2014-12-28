@@ -4,9 +4,9 @@
 
 (setup-shared-extension-module
  'R
- (extension-version "0.3.9")
+ (extension-version "0.3.10")
  compile-options: '(-X cock
                        "`R CMD config --cppflags`"
                        "`R CMD config --ldflags`"))
 
-(run-cock -o R.wiki R-core.scm)
+(run-cock -o R.wiki R.scm R-core.scm)

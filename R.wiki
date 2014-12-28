@@ -2,6 +2,19 @@
 
 Interface to R
 [[toc:]]
+=== {{R}}
+'''[module]''' {{R}}
+
+The R-module provides functions for applying and evaluating
+R-expressions.
+* [[#NA]]
+* [[#NA?]]
+* [[#R]]
+* [[#R*]]
+* [[#R->scheme]]
+* [[#R-eval]]
+* [[#R-missing]]
+* [[#R-null]]
 === Overview
 {{R}} provides a simple way to call R-functions, consisting of the following two forms: {{R}} and {{R*}}. {{R}} evaluates an R-expression, returning an opaque R-pointer that can be passed to other R-functions. Use this, for instance, when you don't need to modify the object in Scheme.
 
@@ -18,6 +31,9 @@ NA corresponds to R's NA.
 ===== Examples
 Don't forget to quasiquote:
  (R* (is.na (c 1 ,NA)))
+  => #(#f
+  =>   #t)
+ 
 ==== {{R-missing}}
 <constant>R-missing → (foreign-value R_MissingArg SEXP)</constant>
 R-constant for missing arguments
@@ -26,6 +42,8 @@ R-constant for missing arguments
 ===== Examples
 Selecting columns of matrices; corresponds to {{sum(complete.cases(airquality[, -1]))}}:
  (R* (sum (complete.cases (|[| airquality ,R-missing 1))))
+  => 116
+ 
 ==== {{R-null}}
 <constant>R-null → (foreign-value R_NilValue SEXP)</constant>
 NULL
@@ -34,15 +52,19 @@ NULL
 ===== Examples
 Empty list is not null:
  (R* (is.null (list)))
+  => #f
+ 
 {{NULL}}, on the other hand:
  (R* (is.null ,R-null))
+  => #t
+ 
 ==== {{R}}
 <syntax>(R expression ...) → R-object</syntax>
 Evaluate R-expressions, but do not try to translate the final
 result into a native Scheme object; this is useful when you don't need
 to manipulate the object directly in Scheme.
-; expression : An expression to evaluate
-; ... : More expressions
+; {{expression}} : An expression to evaluate
+; {{...}} : More expressions
 <enscript highlight="scheme">(define-syntax
   R
   (lambda (expression rename compare)
@@ -66,18 +88,22 @@ An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/do
             mtcars
             geom:
             (c "boxplot" "jitter"))))
+  => #<tagged pointer sexp 402d1e8>
+ 
 Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:
  (let ((x (R (sort (rnorm 47)))))
    (R
     (plot ,x xlab: "i" ylab: "Random normals" type: "s" main: "Primitive ECDF")
     (points ,x cex: 0.5 col: "dark red")))
+  => #<tagged pointer sexp 1874eb8>
+ 
 ==== {{R*}}
 <syntax>(R* expression ...) → Scheme-object</syntax>
 Evaluate R-expressions and translate the final result into a
 Scheme object, where possible (cf. [[#overview]]); use this (as opposed
 to {{R}}) when you need to manipulate the value in Scheme.
-; expression : An expression to evaluate
-; ... : More expressions
+; {{expression}} : An expression to evaluate
+; {{...}} : More expressions
 <enscript highlight="scheme">(define-syntax
   R*
   (lambda (expression rename compare) `(R->scheme (R ,@(cdr expression)))))
@@ -88,6 +114,9 @@ An example using classical statistics:
                                  (df (R (data.frame x: ,x y: ,y)))
                                  (d (R (lm (as.formula "y ~ x") data: ,df))))
    (R* ($ (summary ,d) "cov.unscaled")))
+  => #(0.0401171768745487   -0.00629666931684526 -0.00629666931684526
+  =>    0.00131645952908708)
+ 
 === About this egg
 
 ==== Author
@@ -124,6 +153,7 @@ BSD
 ; [[https://github.com/klutometis/R/releases/tag/0.3.6|0.3.6]] : Add test-exit.
 ; [[https://github.com/klutometis/R/releases/tag/0.3.7|0.3.7]] : Remove dependency on setup-helper-cock.
 ; [[https://github.com/klutometis/R/releases/tag/0.3.8|0.3.8]] : Remove the dependency on debug.
+; [[https://github.com/klutometis/R/releases/tag/0.3.9|0.3.9]] : Remove the `debug?' parameter.
 ==== Colophon
 
 Documented by [[/egg/cock|cock]].
