@@ -1,6 +1,6 @@
 (module R
-;;   @("The R-module provides functions for applying and evaluating
-;; R-expressions.")
+  @("The R-module provides functions for applying and evaluating
+R-expressions.")
   (NA
    NA?
    R
