@@ -1,12 +1,12 @@
-(use cock setup-helper-mod)
+(use hahn setup-helper-mod)
 
 (verify-extension-name "R")
 
 (setup-shared-extension-module
  'R
- (extension-version "0.3.10")
- compile-options: '(-X cock
+ (extension-version "0.3.11")
+ compile-options: '(-X hahn
                        "`R CMD config --cppflags`"
                        "`R CMD config --ldflags`"))
 
-(run-cock -o R.wiki R.scm R-core.scm)
+(run-hahn -o R.wiki R.scm R-core.scm)
