@@ -8,7 +8,7 @@
  (depends big-chicken
           call-with-environment-variables
           define-record-and-printer
-          hahn
+          (hahn "0.9.3")
           matchable
           moremacros
           numbers
