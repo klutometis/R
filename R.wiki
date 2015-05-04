@@ -88,14 +88,14 @@ An example from {{ggplot2}}; see [[https://raw.github.com/klutometis/R/master/do
             mtcars
             geom:
             (c "boxplot" "jitter"))))
-  => #<tagged pointer sexp 3cc62d8>
+  => #<tagged pointer sexp 3951738>
  
 Another plotting example; see [[https://raw.github.com/klutometis/R/master/doc/plot.png|here]]:
  (let ((x (R (sort (rnorm 47)))))
    (R
     (plot ,x xlab: "i" ylab: "Random normals" type: "s" main: "Primitive ECDF")
     (points ,x cex: 0.5 col: "dark red")))
-  => #<tagged pointer sexp 1d4b7d8>
+  => #<tagged pointer sexp 1510958>
  
 ==== {{R*}}
 <syntax>(R* expression ...) → Scheme-object</syntax>
@@ -114,8 +114,8 @@ An example using classical statistics:
                                  (df (R (data.frame x: ,x y: ,y)))
                                  (d (R (lm (as.formula "y ~ x") data: ,df))))
    (R* ($ (summary ,d) "cov.unscaled")))
-  => #(0.0339089162032204   -0.00582415771036816 -0.00582415771036816
-  =>    0.00141875159655593)
+  => #(0.0423305190964232  -0.0064350404228672 -0.0064350404228672
+  =>    0.00128082525122574)
  
 === About this egg
 
@@ -155,6 +155,8 @@ BSD
 ; [[https://github.com/klutometis/R/releases/tag/0.3.8|0.3.8]] : Remove the dependency on debug.
 ; [[https://github.com/klutometis/R/releases/tag/0.3.9|0.3.9]] : Remove the `debug?' parameter.
 ; [[https://github.com/klutometis/R/releases/tag/0.3.10|0.3.10]] : Evaluate the examples.
+; [[https://github.com/klutometis/R/releases/tag/0.3.11|0.3.11]] : Use hahn.
+; [[https://github.com/klutometis/R/releases/tag/0.3.12|0.3.12]] : Specify hahn-version.
 ==== Colophon
 
 Documented by [[/egg/hahn|hahn]].
