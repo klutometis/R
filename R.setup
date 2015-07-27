@@ -4,9 +4,9 @@
 
 (setup-shared-extension-module
  'R
- (extension-version "0.3.12")
+ (extension-version "0.3.13")
  compile-options: '(-X hahn
-                       "`R CMD config --cppflags`"
-                       "`R CMD config --ldflags`"))
+                       -C "\"$(R CMD config --cppflags)\""
+                       -L "\"$(R CMD config --ldflags)\""))
 
 (run-hahn -o R.wiki R.scm R-core.scm)
