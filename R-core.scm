@@ -12,6 +12,12 @@
  #include <Rembedded.h>
  #include <Rinternals.h>
  #include <R_ext/Arith.h>
+
+/* argvector chicken starts with version 8 */
+#if C_BINARY_VERSION >= 8
+# define ARGVECTOR_CHICKEN
+#endif
+
 END
 )
 
@@ -352,10 +358,19 @@ END
           void
           ((SEXP vector)
            (int i))
-          "Rcomplex complex = COMPLEX((SEXP) vector)[i];"
-          "C_word *real = C_alloc(C_SIZEOF_FLONUM);"
-          "C_word *imag = C_alloc(C_SIZEOF_FLONUM);"
-          "C_values(4, C_SCHEME_UNDEFINED, C_k, C_flonum(&real, complex.r), C_flonum(&imag, complex.i));")
+          "Rcomplex complex = COMPLEX((SEXP) vector)[i];\n"
+          "C_word *real = C_alloc(C_SIZEOF_FLONUM);\n"
+          "C_word *imag = C_alloc(C_SIZEOF_FLONUM);\n"
+          "#ifdef ARGVECTOR_CHICKEN\n"
+          "  C_word av[4];\n"
+          "  av[0] = C_SCHEME_UNDEFINED;\n"
+          "  av[1] = C_k;\n"
+          "  av[2] = C_flonum(&real, complex.r);\n"
+          "  av[3] = C_flonum(&imag, complex.i);\n"
+          "  C_values(4, av);\n"
+          "#else\n"
+          "  C_values(4, C_SCHEME_UNDEFINED, C_k, C_flonum(&real, complex.r), C_flonum(&imag, complex.i));\n"
+          "#endif\n")
          vector
          i)
         (make-rectangular real imaginary))))
@@ -473,34 +488,43 @@ END
            (scheme-object tag)
            (scheme-object named)
            (scheme-object unnamed))
-          "int nargs = C_unfix(C_fixnum_plus(C_i_length(named), C_i_length(unnamed)));"
-          "SEXP expression, ei;"
-          "expression = allocVector(LANGSXP, nargs + 1);"
-          "SETCAR(expression, (SEXP) f);"
-          "PROTECT(ei = CDR(expression));"
-          "while (!C_truep(C_i_nullp(unnamed))) {"
-          "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(unnamed)));"
-          "  unnamed = C_i_cdr(unnamed);"
-          "  ei = CDR(ei);"
-          "}"
-          "while (!C_truep(C_i_nullp(named))) {"
-          "  SEXP arg;"
-          "  PROTECT(arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named)));"
+          "int nargs = C_unfix(C_fixnum_plus(C_i_length(named), C_i_length(unnamed)));\n"
+          "SEXP expression, ei;\n"
+          "expression = allocVector(LANGSXP, nargs + 1);\n"
+          "SETCAR(expression, (SEXP) f);\n"
+          "PROTECT(ei = CDR(expression));\n"
+          "while (!C_truep(C_i_nullp(unnamed))) {\n"
+          "  SETCAR(ei, (SEXP) C_c_pointer_or_null(C_i_car(unnamed)));\n"
+          "  unnamed = C_i_cdr(unnamed);\n"
+          "  ei = CDR(ei);\n"
+          "}\n"
+          "while (!C_truep(C_i_nullp(named))) {\n"
+          "  SEXP arg;\n"
+          "  PROTECT(arg = (SEXP) C_c_pointer_or_null(C_i_cdar(named)));\n"
           ;; Why the fuck do we have to null-terminate the string here?
           ;; Should we do a copy instead?
-          "  char *name = C_c_string(C_i_caar(named));"
-          "  name[C_unfix(C_i_string_length(C_i_caar(named)))] = '\\0';"
-          "  SET_TAG(ei, install(name));"
-          "  SETCAR(ei, arg);"
-          "  named = C_i_cdr(named);"
-          "  ei = CDR(ei);"
-          "  UNPROTECT(1);"
-          "}"
-          "UNPROTECT(1);"
-          "int error = 0;"
-          "SEXP val = R_tryEval(expression, R_GlobalEnv, &error);"
-          "C_word *pointer = C_alloc(C_SIZEOF_TAGGED_POINTER);"
-          "C_values(4, C_SCHEME_UNDEFINED, C_k, C_taggedmpointer(&pointer, tag, val), C_fix(error));")
+          "  char *name = C_c_string(C_i_caar(named));\n"
+          "  name[C_unfix(C_i_string_length(C_i_caar(named)))] = '\\0';\n"
+          "  SET_TAG(ei, install(name));\n"
+          "  SETCAR(ei, arg);\n"
+          "  named = C_i_cdr(named);\n"
+          "  ei = CDR(ei);\n"
+          "  UNPROTECT(1);\n"
+          "}\n"
+          "UNPROTECT(1);\n"
+          "int error = 0;\n"
+          "SEXP val = R_tryEval(expression, R_GlobalEnv, &error);\n"
+          "C_word *pointer = C_alloc(C_SIZEOF_TAGGED_POINTER);\n"
+          "#ifdef ARGVECTOR_CHICKEN\n"
+          "  C_word av[4];\n"
+          "  av[0] = C_SCHEME_UNDEFINED;\n"
+          "  av[1] = C_k;\n"
+          "  av[2] = C_taggedmpointer(&pointer, tag, val);\n"
+          "  av[3] = C_fix(error);\n"
+          "  C_values(4, av);\n"
+          "#else\n"
+          "  C_values(4, C_SCHEME_UNDEFINED, C_k, C_taggedmpointer(&pointer, tag, val), C_fix(error));\n"
+          "#endif\n")
          f
          'sexp
          named-args
